@@ -1,12 +1,638 @@
 <!DOCTYPE html>
-<html>
+<html lang="he" dir="rtl">
 <head>
-    <title>חתונה מבורכת</title>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אתר תמונות חתונה</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, 
+                #f7f1e3 0%, 
+                #e8dcc0 25%, 
+                #d4c5a9 50%, 
+                #c9b99b 75%, 
+                #b8a082 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg opacity='0.1'%3E%3Cpath d='M20,80 Q30,70 40,80 T60,80' stroke='%23556B2F' stroke-width='2' fill='none'/%3E%3Cpath d='M10,60 Q20,50 30,60 T50,60' stroke='%238FBC8F' stroke-width='1.5' fill='none'/%3E%3Cpath d='M70,90 Q80,80 90,90' stroke='%23556B2F' stroke-width='1' fill='none'/%3E%3C/g%3E%3C/svg%3E");
+            background-size: 200px 200px;
+            animation: floatPlants 30s infinite linear;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes floatPlants {
+            0% { transform: translateX(0px) translateY(0px); }
+            25% { transform: translateX(-10px) translateY(-5px); }
+            50% { transform: translateX(0px) translateY(-10px); }
+            75% { transform: translateX(10px) translateY(-5px); }
+            100% { transform: translateX(0px) translateY(0px); }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.1),
+                0 10px 30px rgba(139, 125, 107, 0.2),
+                inset 0 1px 0 rgba(255,255,255,0.6);
+            padding: 50px;
+            max-width: 550px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(139, 125, 107, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '🌿';
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            font-size: 24px;
+            opacity: 0.3;
+            animation: leafFloat 6s infinite ease-in-out;
+        }
+
+        .container::after {
+            content: '🌸';
+            position: absolute;
+            bottom: 25px;
+            right: 35px;
+            font-size: 20px;
+            opacity: 0.4;
+            animation: petalFloat 8s infinite ease-in-out reverse;
+        }
+
+        @keyframes leafFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        @keyframes petalFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(-3deg); }
+        }
+
+        h1 {
+            color: #5d5341;
+            margin-bottom: 35px;
+            font-size: 2.8em;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(139, 125, 107, 0.3);
+            background: linear-gradient(135deg, #5d5341, #8b7d6b, #a69080);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #5d5341;
+            font-size: 1.1em;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 18px 20px;
+            border: 2px solid rgba(139, 125, 107, 0.3);
+            border-radius: 15px;
+            font-size: 16px;
+            font-family: 'Georgia', serif;
+            transition: all 0.3s ease;
+            text-align: right;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+            color: #5d5341;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: #8b7d6b;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 0 3px rgba(139, 125, 107, 0.1);
+            transform: translateY(-2px);
+        }
+
+        button {
+            background: linear-gradient(135deg, #8b7d6b 0%, #a69080 50%, #b8a082 100%);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-family: 'Georgia', serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            margin: 12px 8px;
+            letter-spacing: 1px;
+            box-shadow: 
+                0 8px 20px rgba(139, 125, 107, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 12px 30px rgba(139, 125, 107, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .camera-container {
+            margin: 20px 0;
+        }
+
+        #video {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 20px;
+            box-shadow: 
+                0 15px 35px rgba(139, 125, 107, 0.3),
+                0 5px 15px rgba(0, 0, 0, 0.1);
+            background: #f7f1e3;
+            border: 3px solid rgba(139, 125, 107, 0.2);
+        }
+
+        #canvas {
+            display: none;
+        }
+
+        .counter {
+            font-size: 26px;
+            font-weight: 600;
+            color: #5d5341;
+            margin: 25px 0;
+            font-family: 'Georgia', serif;
+            letter-spacing: 1px;
+            background: rgba(139, 125, 107, 0.1);
+            padding: 15px 25px;
+            border-radius: 25px;
+            border: 1px solid rgba(139, 125, 107, 0.2);
+            display: inline-block;
+        }
+
+        .camera-status {
+            padding: 15px 25px;
+            border-radius: 25px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: 600;
+            font-family: 'Georgia', serif;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(10px);
+        }
+
+        .camera-status.ready {
+            background: rgba(144, 183, 121, 0.9);
+            color: #2d4a1f;
+            border: 1px solid rgba(144, 183, 121, 0.3);
+        }
+
+        .camera-status.error {
+            background: rgba(199, 125, 125, 0.9);
+            color: #5c2424;
+            border: 1px solid rgba(199, 125, 125, 0.3);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(247, 241, 227, 0.3);
+            border-radius: 20px;
+            border: 1px solid rgba(139, 125, 107, 0.2);
+        }
+
+        .photo-item {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 
+                0 8px 20px rgba(139, 125, 107, 0.2),
+                0 3px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            background: white;
+        }
+
+        .photo-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+
+        .photo-item .delete-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(199, 125, 125, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 25px;
+                margin: 10px;
+            }
+            
+            h1 {
+                font-size: 2.2em;
+                letter-spacing: 1px;
+            }
+        }
+    </style>
 </head>
-<body style="text-align:center; font-family:Arial; padding:50px; background:#f5f5f5;">
-    <h1>🤵👰 חתונה מבורכת</h1>
-    <p>האתר בבניה - בקרוב!</p>
-    <button onclick="alert('בקרוב!')">התחל לצלם</button>
+<body>
+    <div class="container">
+        <!-- דף כניסה -->
+        <div id="loginPage">
+            <h1>🤵👰 חתונה מבורכת</h1>
+            <div class="form-group">
+                <label for="guestName">שם האורח:</label>
+                <input type="text" id="guestName" placeholder="הכנס את שמך המלא">
+            </div>
+            <button onclick="startCamera()">התחל לצלם</button>
+            <button onclick="showGallery()">צפה בגלריה</button>
+        </div>
+
+        <!-- דף מצלמה -->
+        <div id="cameraPage" class="hidden">
+            <h1>📸 בואו נצלם!</h1>
+            <div class="counter">
+                נותרו: <span id="remainingPhotos">25</span> תמונות
+            </div>
+            <div class="camera-container">
+                <video id="video" autoplay playsinline muted></video>
+                <canvas id="canvas"></canvas>
+                <div id="cameraStatus" class="camera-status" style="display: none;"></div>
+            </div>
+            <div>
+                <button id="captureBtn" onclick="capturePhoto()">📸 צלם תמונה</button>
+                <button onclick="viewMyPhotos()">🖼️ התמונות שלי</button>
+                <button onclick="goBack()">↩️ חזור</button>
+            </div>
+        </div>
+
+        <!-- דף התמונות של האורח -->
+        <div id="myPhotosPage" class="hidden">
+            <h1>התמונות שלי</h1>
+            <div id="myPhotosGrid" class="photos-grid"></div>
+            <button onclick="goBackToCamera()">חזור לצילום</button>
+            <button onclick="goBack()">חזור לדף הבית</button>
+        </div>
+
+        <!-- דף כניסה לגלריה -->
+        <div id="galleryLoginPage" class="hidden">
+            <h1>🔒 גלריה מוגנת</h1>
+            <div class="form-group">
+                <label for="password">סיסמה:</label>
+                <input type="password" id="password" placeholder="הכנס סיסמה">
+            </div>
+            <button onclick="checkPassword()">כניסה לגלריה</button>
+            <button onclick="goBack()">חזור</button>
+        </div>
+
+        <!-- דף הגלריה -->
+        <div id="galleryPage" class="hidden">
+            <h1>📷 גלריית החתונה</h1>
+            <div id="galleryContent"></div>
+            <button onclick="downloadAllPhotos()">📥 הורד את כל התמונות</button>
+            <button onclick="goBack()">↩️ חזור לדף הבית</button>
+        </div>
+    </div>
+
+    <script>
+        // משתנים גלובליים
+        let currentGuest = '';
+        let photos = JSON.parse(localStorage.getItem('weddingPhotos')) || {};
+        let stream = null;
+        const maxPhotos = 25;
+        const galleryPassword = 'wedding2024';
+
+        // פונקציות ניווט
+        function showPage(pageId) {
+            document.querySelectorAll('.container > div').forEach(div => {
+                div.classList.add('hidden');
+            });
+            document.getElementById(pageId).classList.remove('hidden');
+        }
+
+        function goBack() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            showPage('loginPage');
+        }
+
+        function goBackToCamera() {
+            showPage('cameraPage');
+        }
+
+        // בדיקת תמיכה במצלמה
+        function isCameraSupported() {
+            return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+        }
+
+        // התחלת המצלמה
+        async function startCamera() {
+            const guestName = document.getElementById('guestName').value.trim();
+            if (!guestName) {
+                alert('אנא הכנס את שמך');
+                return;
+            }
+
+            if (!isCameraSupported()) {
+                alert('המצלמה אינה נתמכת בדפדפן זה');
+                return;
+            }
+
+            currentGuest = guestName;
+            
+            if (!photos[currentGuest]) {
+                photos[currentGuest] = [];
+            }
+
+            try {
+                alert('🎥 בשלב הבא הדפדפן יבקש הרשאה למצלמה. אנא לחץ על "אפשר"');
+                
+                let constraints = { video: true };
+                
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                
+                const video = document.getElementById('video');
+                video.srcObject = stream;
+                
+                await new Promise((resolve) => {
+                    video.onloadedmetadata = () => {
+                        video.play();
+                        resolve();
+                    };
+                });
+                
+                showPage('cameraPage');
+                updateCounter();
+                showCameraStatus('המצלמה מוכנה! לחץ על "צלם תמונה"', 'ready');
+                
+            } catch (error) {
+                console.error('שגיאה בפתיחת המצלמה:', error);
+                let errorMessage = 'לא ניתן לפתוח את המצלמה. ';
+                
+                if (error.name === 'NotAllowedError') {
+                    errorMessage = '🚫 לא ניתנה הרשאה למצלמה!\n\nכדי לתקן:\n1. לחץ על סמל המנעול בסרגל הכתובת\n2. אפשר גישה למצלמה\n3. רענן את הדף\n4. נסה שוב';
+                } else if (error.name === 'NotFoundError') {
+                    errorMessage += 'לא נמצאה מצלמה במכשיר זה';
+                } else {
+                    errorMessage += 'שגיאה טכנית. נסה לרענן את הדף';
+                }
+                
+                alert(errorMessage);
+            }
+        }
+
+        // צילום תמונה
+        function capturePhoto() {
+            if (!currentGuest) {
+                alert('שגיאה: לא נמצא שם אורח');
+                return;
+            }
+            
+            const currentCount = photos[currentGuest].length;
+            if (currentCount >= maxPhotos) {
+                alert(`הגעת למספר המקסימלי של ${maxPhotos} תמונות`);
+                return;
+            }
+
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            
+            if (!video.videoWidth || !video.videoHeight) {
+                alert('המצלמה עדיין לא מוכנה. אנא המתן רגע ונסה שוב');
+                return;
+            }
+
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            ctx.drawImage(video, 0, 0);
+
+            const imageData = canvas.toDataURL('image/jpeg', 0.8);
+            
+            const photoData = {
+                id: Date.now(),
+                data: imageData,
+                timestamp: new Date().toLocaleString('he-IL'),
+                guest: currentGuest
+            };
+
+            photos[currentGuest].push(photoData);
+            localStorage.setItem('weddingPhotos', JSON.stringify(photos));
+            
+            updateCounter();
+            
+            const remaining = maxPhotos - photos[currentGuest].length;
+            if (remaining > 0) {
+                alert(`תמונה נשמרה! נותרו לך ${remaining} תמונות`);
+            } else {
+                alert('צילמת את כל התמונות! תודה רבה 🎉');
+            }
+        }
+
+        // עדכון מונה
+        function updateCounter() {
+            const remaining = maxPhotos - (photos[currentGuest]?.length || 0);
+            document.getElementById('remainingPhotos').textContent = remaining;
+            
+            const captureBtn = document.getElementById('captureBtn');
+            if (remaining <= 0) {
+                captureBtn.disabled = true;
+                captureBtn.textContent = '📸 הגעת למקסימום תמונות';
+            }
+        }
+
+        // הצגת התמונות של האורח
+        function viewMyPhotos() {
+            if (!currentGuest || !photos[currentGuest]) {
+                alert('אין תמונות להצגה');
+                return;
+            }
+
+            const grid = document.getElementById('myPhotosGrid');
+            grid.innerHTML = '';
+
+            photos[currentGuest].forEach((photo, index) => {
+                const photoDiv = document.createElement('div');
+                photoDiv.className = 'photo-item';
+                photoDiv.innerHTML = `
+                    <img src="${photo.data}" alt="תמונה ${index + 1}">
+                    <button class="delete-btn" onclick="deletePhoto(${index})">×</button>
+                `;
+                grid.appendChild(photoDiv);
+            });
+
+            showPage('myPhotosPage');
+        }
+
+        // מחיקת תמונה
+        function deletePhoto(index) {
+            if (!currentGuest) return;
+            
+            if (confirm('האם אתה בטוח שברצונך למחוק את התמונה?')) {
+                photos[currentGuest].splice(index, 1);
+                localStorage.setItem('weddingPhotos', JSON.stringify(photos));
+                viewMyPhotos();
+                updateCounter();
+            }
+        }
+
+        // הצגת דף כניסה לגלריה
+        function showGallery() {
+            showPage('galleryLoginPage');
+        }
+
+        // בדיקת סיסמה
+        function checkPassword() {
+            const password = document.getElementById('password').value;
+            if (password === galleryPassword) {
+                loadGallery();
+                showPage('galleryPage');
+            } else {
+                alert('סיסמה שגויה');
+            }
+        }
+
+        // טעינת הגלריה
+        function loadGallery() {
+            const galleryContent = document.getElementById('galleryContent');
+            galleryContent.innerHTML = '';
+
+            if (Object.keys(photos).length === 0) {
+                galleryContent.innerHTML = '<p>אין תמונות עדיין</p>';
+                return;
+            }
+
+            Object.keys(photos).forEach(guestName => {
+                if (photos[guestName].length > 0) {
+                    const guestDiv = document.createElement('div');
+                    guestDiv.style.marginBottom = '30px';
+                    guestDiv.style.background = 'rgba(247, 241, 227, 0.6)';
+                    guestDiv.style.borderRadius = '20px';
+                    guestDiv.style.padding = '30px';
+                    
+                    const title = document.createElement('h3');
+                    title.textContent = `${guestName} (${photos[guestName].length} תמונות)`;
+                    title.style.color = '#5d5341';
+                    title.style.marginBottom = '20px';
+                    guestDiv.appendChild(title);
+                    
+                    const grid = document.createElement('div');
+                    grid.className = 'photos-grid';
+                    
+                    photos[guestName].forEach((photo, index) => {
+                        const photoDiv = document.createElement('div');
+                        photoDiv.className = 'photo-item';
+                        photoDiv.innerHTML = `
+                            <img src="${photo.data}" alt="תמונה של ${guestName}">
+                        `;
+                        grid.appendChild(photoDiv);
+                    });
+                    
+                    guestDiv.appendChild(grid);
+                    galleryContent.appendChild(guestDiv);
+                }
+            });
+        }
+
+        // הורדת כל התמונות
+        function downloadAllPhotos() {
+            if (Object.keys(photos).length === 0) {
+                alert('אין תמונות להורדה');
+                return;
+            }
+
+            Object.keys(photos).forEach(guestName => {
+                photos[guestName].forEach((photo, index) => {
+                    const link = document.createElement('a');
+                    link.download = `${guestName}_תמונה_${index + 1}.jpg`;
+                    link.href = photo.data;
+                    link.click();
+                });
+            });
+        }
+
+        // הוספת התראות חברותיות
+        function showCameraStatus(message, type = 'ready') {
+            const statusDiv = document.getElementById('cameraStatus');
+            if (statusDiv) {
+                statusDiv.textContent = message;
+                statusDiv.className = `camera-status ${type}`;
+                statusDiv.style.display = 'block';
+                
+                if (type === 'ready') {
+                    setTimeout(() => {
+                        statusDiv.style.display = 'none';
+                    }, 3000);
+                }
+            }
+        }
+
+        // טעינה ראשונית
+        document.addEventListener('DOMContentLoaded', function() {
+            showPage('loginPage');
+        });
+    </script>
 </body>
 </html>
