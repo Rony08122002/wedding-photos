@@ -246,35 +246,34 @@
             display: inline-block;
         }
 
-        .flip-camera-btn {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(255, 255, 255, 0.9);
-            color: #5d5341;
-            border: 2px solid rgba(139, 125, 107, 0.5);
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            font-size: 24px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            z-index: 100;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .flip-camera-btn:hover {
-            background: rgba(139, 125, 107, 0.9);
+        .flip-camera-btn-bottom {
+            background: linear-gradient(135deg, #8b7d6b 0%, #a69080 50%, #b8a082 100%);
             color: white;
-            transform: scale(1.1);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-family: 'Georgia', serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 auto;
+            letter-spacing: 0.5px;
+            box-shadow: 
+                0 6px 15px rgba(139, 125, 107, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            display: inline-block;
         }
 
-        .flip-camera-btn:active {
-            transform: scale(0.95);
+        .flip-camera-btn-bottom:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 8px 20px rgba(139, 125, 107, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .flip-camera-btn-bottom:active {
+            transform: translateY(0px);
         }
 
         #canvas {
