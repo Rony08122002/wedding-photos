@@ -248,26 +248,28 @@
 
         .flip-camera-btn {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            border: none;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #5d5341;
+            border: 2px solid rgba(139, 125, 107, 0.5);
             border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            font-size: 20px;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
-            z-index: 10;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
         .flip-camera-btn:hover {
             background: rgba(139, 125, 107, 0.9);
+            color: white;
             transform: scale(1.1);
         }
 
@@ -621,7 +623,7 @@
         const maxPhotos = 25;
         const maxVideos = 5;
         const maxVideoLength = 30; // שניות
-        const galleryPassword = 'R&S-2025'; // שנה את הסיסמה הזו
+        const galleryPassword = 'wedding2024'; // שנה את הסיסמה הזו
 
         // פונקציות ניווט
         function showPage(pageId) {
