@@ -1232,6 +1232,9 @@
         // טעינה ראשונית
         document.addEventListener('DOMContentLoaded', function() {
             showPage('loginPage');
+            
+            // טעינת התמונות בהתחלה
+            photos = JSON.parse(localStorage.getItem('weddingPhotos')) || {};
         });
     </script>
 </body>
