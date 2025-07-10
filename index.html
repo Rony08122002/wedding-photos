@@ -158,6 +158,12 @@
             <video id="video" autoplay playsinline muted></video>
             <canvas id="canvas"></canvas>
             
+            <div style="margin: 15px 0;">
+                <button onclick="flipCamera()" style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 12px 20px; font-size: 14px;">
+                    🔄 החלף מצלמה
+                </button>
+            </div>
+            
             <div id="photoStatus" class="status" style="display: none;"></div>
             
             <button onclick="takePhoto()">📸 צלם תמונה</button>
@@ -207,6 +213,7 @@
         const PASSWORD = 'wedding123'; // שנה את הסיסמה!
         let currentGuest = '';
         let cameraStream = null;
+        let currentFacingMode = 'user'; // מתחיל עם סלפי
 
         // ניווט בין דפים
         function showPage(pageId) {
@@ -245,7 +252,7 @@
 
             try {
                 cameraStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'user' } // מצלמה קדמית
+                    video: { facingMode: currentFacingMode }
                 });
 
                 const video = document.getElementById('video');
@@ -451,6 +458,42 @@
 
             if (count > 0) {
                 alert(`מוריד ${count} תמונות...`);
+            }
+        }
+
+        // החלפת מצלמה
+        async function flipCamera() {
+            if (!cameraStream) {
+                alert('המצלמה לא פעילה');
+                return;
+            }
+
+            try {
+                // עצירת המצלמה הנוכחית
+                cameraStream.getTracks().forEach(track => track.stop());
+                
+                // החלפת המצב
+                currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+                
+                // הפעלת המצלמה החדשה
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: currentFacingMode }
+                });
+
+                const video = document.getElementById('video');
+                video.srcObject = cameraStream;
+                
+                const cameraType = currentFacingMode === 'user' ? 'קדמית (סלפי)' : 'אחורית';
+                showStatus(`🔄 הוחלף למצלמה ${cameraType}`);
+
+            } catch (error) {
+                console.error('שגיאה בהחלפת מצלמה:', error);
+                
+                // חזרה למצב הקודם אם יש שגיאה
+                currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+                
+                alert('לא ניתן להחליף מצלמה. יכול להיות שלמכשיר יש רק מצלמה אחת.');
+                showStatus('❌ החלפת מצלמה נכשלה');
             }
         }
 
