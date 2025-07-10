@@ -559,20 +559,18 @@
             }
         }
 
-        // Photo capture function
+        // Photo capture function - מעודכן לעבוד טוב יותר
         async function capturePhoto() {
             if (!currentGuest) {
                 alert('שגיאה: לא נמצא שם אורח');
                 return;
             }
 
-            if (!firebaseConnected) {
-                alert('אין חיבור לענן. התמונה תישמר מקומית.');
-            }
-
             try {
-                // בדיקת מספר תמונות נוכחי
-                const currentCount = await getUserPhotoCount(currentGuest);
+                // בדיקת מספר תמונות נוכחי (מקומי)
+                const localPhotos = JSON.parse(localStorage.getItem('wedding-photos-all') || '{}');
+                const currentCount = (localPhotos[currentGuest] || []).length;
+                
                 if (currentCount >= maxPhotos) {
                     alert(`הגעת למספר המקסימלי של ${maxPhotos} תמונות`);
                     return;
@@ -595,29 +593,33 @@
                 const imageData = canvas.toDataURL('image/jpeg', 0.8);
                 
                 const photoData = {
+                    id: Date.now() + Math.random(),
                     guestName: currentGuest,
                     imageData: imageData,
                     timestamp: new Date().toISOString(),
-                    createdAt: firebaseConnected ? serverTimestamp() : new Date()
+                    createdAt: new Date()
                 };
 
-                // שמירה ב-Firebase
+                // שמירה מקומית (עדיפות ראשונה)
+                if (!localPhotos[currentGuest]) {
+                    localPhotos[currentGuest] = [];
+                }
+                localPhotos[currentGuest].push(photoData);
+                localStorage.setItem('wedding-photos-all', JSON.stringify(localPhotos));
+
+                // ניסיון שמירה ב-Firebase (בונוס)
                 if (firebaseConnected) {
                     try {
                         await addDoc(collection(db, 'wedding-photos'), photoData);
-                        console.log('תמונה נשמרה ב-Firebase');
+                        console.log('✅ תמונה נשמרה גם ב-Firebase');
                     } catch (error) {
-                        console.error('שגיאה בשמירה ב-Firebase:', error);
-                        // שמירה מקומית כ-fallback
-                        savePhotoLocally(photoData);
+                        console.log('⚠️ שגיאה בשמירה ב-Firebase, אבל נשמרה מקומית:', error);
                     }
-                } else {
-                    savePhotoLocally(photoData);
                 }
 
                 await updateCounter();
                 
-                const remaining = maxPhotos - (await getUserPhotoCount(currentGuest));
+                const remaining = maxPhotos - localPhotos[currentGuest].length;
                 if (remaining > 0) {
                     alert(`תמונה נשמרה בהצלחה! נותרו לך ${remaining} תמונות`);
                 } else {
@@ -630,31 +632,13 @@
             }
         }
 
-        // Local storage fallback
-        function savePhotoLocally(photoData) {
-            const localPhotos = JSON.parse(localStorage.getItem('wedding-photos-local') || '[]');
-            localPhotos.push(photoData);
-            localStorage.setItem('wedding-photos-local', JSON.stringify(localPhotos));
-        }
-
-        // Get user photo count
+        // Get user photo count - עדכון לעבוד עם השיטה החדשה
         async function getUserPhotoCount(guestName) {
-            if (firebaseConnected) {
-                try {
-                    const q = query(collection(db, 'wedding-photos'));
-                    const querySnapshot = await getDocs(q);
-                    return querySnapshot.docs.filter(doc => doc.data().guestName === guestName).length;
-                } catch (error) {
-                    console.error('שגיאה בטעינת מספר תמונות:', error);
-                }
-            }
-            
-            // Fallback to local storage
-            const localPhotos = JSON.parse(localStorage.getItem('wedding-photos-local') || '[]');
-            return localPhotos.filter(photo => photo.guestName === guestName).length;
+            const localPhotos = JSON.parse(localStorage.getItem('wedding-photos-all') || '{}');
+            return (localPhotos[guestName] || []).length;
         }
 
-        // Update counter
+        // Update counter - עדכון
         async function updateCounter() {
             const count = await getUserPhotoCount(currentGuest);
             const remaining = maxPhotos - count;
@@ -668,61 +652,65 @@
             }
         }
 
-        // View my photos
+        // View my photos - עדכון לעבוד עם השיטה החדשה
         async function viewMyPhotos() {
             if (!currentGuest) {
                 alert('שגיאה: לא נמצא שם אורח');
                 return;
             }
 
+            // עבור לדף התמונות מיד
+            showPage('myPhotosPage');
+
             const grid = document.getElementById('myPhotosGrid');
             grid.innerHTML = '<div class="loading"></div> טוען תמונות...';
 
             try {
-                let userPhotos = [];
+                // טעינה מהאחסון המקומי החדש
+                const allPhotos = JSON.parse(localStorage.getItem('wedding-photos-all') || '{}');
+                const userPhotos = allPhotos[currentGuest] || [];
 
-                // טעינה מ-Firebase
-                if (firebaseConnected) {
-                    const q = query(collection(db, 'wedding-photos'), orderBy('createdAt', 'desc'));
-                    const querySnapshot = await getDocs(q);
-                    userPhotos = querySnapshot.docs
-                        .filter(doc => doc.data().guestName === currentGuest)
-                        .map(doc => ({id: doc.id, ...doc.data()}));
-                }
-
-                // Fallback to local storage
-                if (userPhotos.length === 0) {
-                    const localPhotos = JSON.parse(localStorage.getItem('wedding-photos-local') || '[]');
-                    userPhotos = localPhotos.filter(photo => photo.guestName === currentGuest);
-                }
+                console.log('נמצאו תמונות עבור', currentGuest, ':', userPhotos.length);
 
                 grid.innerHTML = '';
 
                 if (userPhotos.length === 0) {
-                    grid.innerHTML = '<p style="text-align: center; color: #888;">אין תמונות עדיין</p>';
+                    grid.innerHTML = `
+                        <div style="text-align: center; padding: 40px; background: rgba(247, 241, 227, 0.6); border-radius: 20px;">
+                            <h3 style="color: #5d5341; margin-bottom: 15px;">📸 אין תמונות עדיין</h3>
+                            <p style="color: #8b7d6b; font-size: 14px;">חזור לדף המצלמה וצלם תמונות!</p>
+                        </div>
+                    `;
                 } else {
                     userPhotos.forEach((photo, index) => {
                         const photoDiv = document.createElement('div');
                         photoDiv.className = 'photo-item';
+                        const timestamp = new Date(photo.timestamp).toLocaleString('he-IL');
                         photoDiv.innerHTML = `
                             <img src="${photo.imageData}" alt="תמונה ${index + 1}" loading="lazy">
-                            <button class="delete-btn" onclick="deletePhoto('${photo.id || index}')">×</button>
+                            <div style="position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; padding: 3px 8px; border-radius: 8px; font-size: 10px;">
+                                ${timestamp.split(' ')[1]}
+                            </div>
+                            <button class="delete-btn" onclick="deleteMyPhoto(${index})">×</button>
                         `;
                         grid.appendChild(photoDiv);
                     });
                 }
 
-                showPage('myPhotosPage');
-
             } catch (error) {
                 console.error('שגיאה בטעינת תמונות:', error);
-                grid.innerHTML = '<p style="text-align: center; color: #888;">שגיאה בטעינת תמונות</p>';
+                grid.innerHTML = `
+                    <div style="text-align: center; padding: 40px; background: rgba(199, 125, 125, 0.2); border-radius: 20px;">
+                        <h3 style="color: #5c2424; margin-bottom: 15px;">❌ שגיאה בטעינת תמונות</h3>
+                        <p style="color: #5c2424; font-size: 14px;">נסה שוב או חזור לדף המצלמה</p>
+                    </div>
+                `;
             }
         }
 
-        // Delete photo (placeholder - implement if needed)
-        function deletePhoto(photoId) {
-            alert('מחיקת תמונות לא זמינה כרגע');
+        // Delete photo function - עדכון
+        function deletePhoto(photoId, guestName) {
+            alert('מחיקת תמונות מהגלריה הכללית לא זמינה. ניתן למחוק רק מ"התמונות שלי"');
         }
 
         // Gallery functions
@@ -762,7 +750,20 @@
 
                 galleryContent.innerHTML = '';
 
-                if (allPhotos.length === 0) {
+        // Load gallery - עדכון לעבוד עם השיטה החדשה
+        async function loadGallery() {
+            const galleryContent = document.getElementById('galleryContent');
+            galleryContent.innerHTML = '<div class="loading"></div> טוען גלריה...';
+
+            try {
+                // טעינה מהאחסון המקומי המשותף
+                const allPhotosData = JSON.parse(localStorage.getItem('wedding-photos-all') || '{}');
+                
+                console.log('טעינת גלריה - נתונים נמצאו:', allPhotosData);
+
+                galleryContent.innerHTML = '';
+
+                if (Object.keys(allPhotosData).length === 0) {
                     galleryContent.innerHTML = `
                         <div style="text-align: center; padding: 40px; background: rgba(247, 241, 227, 0.6); border-radius: 20px;">
                             <h3 style="color: #5d5341; margin-bottom: 15px;">🎉 ברוכים הבאים לגלריית החתונה!</h3>
@@ -772,18 +773,15 @@
                     return;
                 }
 
-                // ארגון תמונות לפי אורח
-                const photosByGuest = {};
-                allPhotos.forEach(photo => {
-                    const guestName = photo.guestName;
-                    if (!photosByGuest[guestName]) {
-                        photosByGuest[guestName] = [];
-                    }
-                    photosByGuest[guestName].push(photo);
-                });
+                let totalPhotos = 0;
+                let totalGuests = 0;
 
-                let totalPhotos = allPhotos.length;
-                let totalGuests = Object.keys(photosByGuest).length;
+                // ספירת סה"כ תמונות
+                Object.keys(allPhotosData).forEach(guestName => {
+                    const guestPhotos = allPhotosData[guestName] || [];
+                    totalPhotos += guestPhotos.length;
+                    if (guestPhotos.length > 0) totalGuests++;
+                });
 
                 // סיכום
                 const summary = document.createElement('div');
@@ -809,38 +807,40 @@
                 galleryContent.appendChild(summary);
 
                 // תמונות לפי אורח
-                Object.keys(photosByGuest).forEach(guestName => {
-                    const guestPhotos = photosByGuest[guestName];
+                Object.keys(allPhotosData).forEach(guestName => {
+                    const guestPhotos = allPhotosData[guestName] || [];
                     
-                    const guestDiv = document.createElement('div');
-                    guestDiv.className = 'gallery-item';
-                    
-                    const title = document.createElement('h3');
-                    title.textContent = `${guestName} (${guestPhotos.length} תמונות)`;
-                    guestDiv.appendChild(title);
-                    
-                    const grid = document.createElement('div');
-                    grid.className = 'photos-grid';
-                    
-                    guestPhotos.forEach((photo, index) => {
-                        const photoDiv = document.createElement('div');
-                        photoDiv.className = 'photo-item';
+                    if (guestPhotos.length > 0) {
+                        const guestDiv = document.createElement('div');
+                        guestDiv.className = 'gallery-item';
                         
-                        const timestamp = photo.timestamp ? new Date(photo.timestamp).toLocaleString('he-IL') : 'לא ידוע';
-                        photoDiv.innerHTML = `
-                            <img src="${photo.imageData}" alt="תמונה של ${guestName}" loading="lazy">
-                            <div style="position: absolute; bottom: 5px; left: 5px; background: rgba(0,0,0,0.7); color: white; padding: 3px 8px; border-radius: 8px; font-size: 11px;">
-                                ${index + 1}/${guestPhotos.length}
-                            </div>
-                            <div style="position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; padding: 3px 8px; border-radius: 8px; font-size: 10px;">
-                                ${new Date(timestamp).toLocaleTimeString('he-IL', {hour: '2-digit', minute: '2-digit'})}
-                            </div>
-                        `;
-                        grid.appendChild(photoDiv);
-                    });
-                    
-                    guestDiv.appendChild(grid);
-                    galleryContent.appendChild(guestDiv);
+                        const title = document.createElement('h3');
+                        title.textContent = `${guestName} (${guestPhotos.length} תמונות)`;
+                        guestDiv.appendChild(title);
+                        
+                        const grid = document.createElement('div');
+                        grid.className = 'photos-grid';
+                        
+                        guestPhotos.forEach((photo, index) => {
+                            const photoDiv = document.createElement('div');
+                            photoDiv.className = 'photo-item';
+                            
+                            const timestamp = new Date(photo.timestamp).toLocaleString('he-IL');
+                            photoDiv.innerHTML = `
+                                <img src="${photo.imageData}" alt="תמונה של ${guestName}" loading="lazy">
+                                <div style="position: absolute; bottom: 5px; left: 5px; background: rgba(0,0,0,0.7); color: white; padding: 3px 8px; border-radius: 8px; font-size: 11px;">
+                                    ${index + 1}/${guestPhotos.length}
+                                </div>
+                                <div style="position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; padding: 3px 8px; border-radius: 8px; font-size: 10px;">
+                                    ${timestamp.split(' ')[1]}
+                                </div>
+                            `;
+                            grid.appendChild(photoDiv);
+                        });
+                        
+                        guestDiv.appendChild(grid);
+                        galleryContent.appendChild(guestDiv);
+                    }
                 });
 
             } catch (error) {
@@ -849,18 +849,18 @@
             }
         }
 
-        // Download all photos
+        // Download all photos - עדכון
         async function downloadAllPhotos() {
             try {
+                const allPhotosData = JSON.parse(localStorage.getItem('wedding-photos-all') || '{}');
+                
                 let allPhotos = [];
-
-                if (firebaseConnected) {
-                    const q = query(collection(db, 'wedding-photos'));
-                    const querySnapshot = await getDocs(q);
-                    allPhotos = querySnapshot.docs.map(doc => doc.data());
-                } else {
-                    allPhotos = JSON.parse(localStorage.getItem('wedding-photos-local') || '[]');
-                }
+                Object.keys(allPhotosData).forEach(guestName => {
+                    const guestPhotos = allPhotosData[guestName] || [];
+                    guestPhotos.forEach(photo => {
+                        allPhotos.push({...photo, guestName});
+                    });
+                });
 
                 if (allPhotos.length === 0) {
                     alert('אין תמונות להורדה');
@@ -887,6 +887,28 @@
 
             } catch (error) {
                 console.error('שגיאה בהורדת תמונות:', error);
+                alert('שגיאה בהורדת התמונות');
+            }
+        }
+
+        // מחיקת תמונה אישית
+        function deleteMyPhoto(index) {
+            if (!currentGuest) return;
+            
+            if (confirm('האם אתה בטוח שברצונך למחוק את התמונה?')) {
+                const allPhotos = JSON.parse(localStorage.getItem('wedding-photos-all') || '{}');
+                
+                if (allPhotos[currentGuest] && allPhotos[currentGuest][index]) {
+                    allPhotos[currentGuest].splice(index, 1);
+                    localStorage.setItem('wedding-photos-all', JSON.stringify(allPhotos));
+                    viewMyPhotos(); // רענון התצוגה
+                    updateCounter(); // עדכון המונה
+                }
+            }
+        }
+
+        // הוסף למשתנים הגלובליים
+        window.deleteMyPhoto = deleteMyPhoto;ה בהורדת תמונות:', error);
                 alert('שגיאה בהורדת התמונות');
             }
         }
