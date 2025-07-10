@@ -526,8 +526,6 @@
                 return;
             }
 
-            showPage('qrSharePage');
-
             // יצירת קוד משותף
             const shareData = {
                 guest: currentGuest,
@@ -537,48 +535,39 @@
 
             const shareCode = btoa(JSON.stringify(shareData)); // הצפנה פשוטה
             
-            // יצירת QR קוד
-            const qrContainer = document.getElementById('qrCodeContainer');
-            qrContainer.innerHTML = `
-                <div class="qr-code">
-                    <div id="qrcode"></div>
-                </div>
-                <div class="share-code">
-                    <strong>קוד לשיתוף:</strong><br>
-                    ${shareCode}
-                </div>
-                <p style="color: #8b7d6b; font-size: 14px;">
-                    האורח יכול לסרוק את ה-QR או להעתיק את הקוד
-                </p>
-            `;
-
-            // יצירת QR פשוט עם טקסט
-            generateSimpleQR(shareCode);
-
-            document.getElementById('shareInfo').innerHTML = `
-                <div class="status ready">
-                    🎉 מוכן לשיתוף ${myPhotos.length} תמונות של ${currentGuest}
-                </div>
-            `;
-        }
-
-        // יצירת QR קוד אמיתי
-        function generateSimpleQR(text) {
-            const qrDiv = document.getElementById('qrcode');
-            if (!qrDiv) return;
-
-            // שימוש ב-API חינמי ליצירת QR
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(text)}`;
+            // מעבר לדף השיתוף
+            showPage('qrSharePage');
             
-            qrDiv.innerHTML = `
-                <div style="padding: 15px; background: white; border-radius: 10px; display: inline-block;">
-                    <img src="${qrUrl}" alt="QR Code" style="width: 200px; height: 200px; border: 2px solid #8b7d6b; border-radius: 8px;">
-                    <p style="text-align: center; margin-top: 10px; color: #5d5341; font-size: 14px;">
+            // יצירת QR קוד מיד
+            const qrContainer = document.getElementById('qrCodeContainer');
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(shareCode)}`;
+            
+            qrContainer.innerHTML = `
+                <div style="padding: 20px; background: white; border-radius: 15px; display: inline-block; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+                    <img src="${qrUrl}" alt="QR Code" style="width: 250px; height: 250px; border: 3px solid #8b7d6b; border-radius: 10px;" onload="console.log('QR loaded successfully')" onerror="console.error('QR failed to load')">
+                    <p style="text-align: center; margin-top: 15px; color: #5d5341; font-size: 16px; font-weight: bold;">
                         📱 סרוק עם המצלמה
                     </p>
                 </div>
+                <div class="share-code">
+                    <strong>📋 קוד לשיתוף:</strong><br>
+                    <textarea readonly style="width: 100%; height: 60px; font-family: monospace; font-size: 12px; padding: 10px; border: 2px dashed #8b7d6b; background: #f9f9f9; resize: none;" onclick="this.select()">${shareCode}</textarea>
+                    <p style="font-size: 12px; color: #888; margin-top: 5px;">👆 לחץ להעתקה</p>
+                </div>
+                <p style="color: #8b7d6b; font-size: 14px; text-align: center; margin-top: 15px;">
+                    💡 האורח יכול לסרוק את ה-QR או להעתיק את הקוד
+                </p>
+            `;
+
+            document.getElementById('shareInfo').innerHTML = `
+                <div class="status ready">
+                    🎉 מוכן לשיתוף ${myPhotos.length} תמונות של ${currentGuest}!
+                </div>
             `;
         }
+
+        // מחיקת הפונקציה הישנה שלא עובדת
+        // generateSimpleQR מוסרת - עכשיו הכל ב-shareMyPhotos
 
         // סריקת QR קוד
         function scanQRCode() {
