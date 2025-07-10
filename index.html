@@ -1,88 +1,51 @@
-<!-- דף הגלריה -->
-        <div id="galleryPage" class="hidden">
-            <h1>📷 גלריית החתונה</h1>
-            <div class="status ready">
-                <p>כאן תראה את כל התמונות מכל האורחים שייבאת</p>
-            </div>
-            <div id="galleryContent"></div>
-            <button onclick="downloadAllPhotos()">📥 הורד תמונות</button>
-            <button onclick="loadGallery()">🔄 רענן</button>
-            <button onclick="goBack()">↩️ חזור</button>
-        </div><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>אתר תמונות חתונה</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: 'Georgia', 'Times New Roman', serif;
-            background: linear-gradient(135deg, 
-                #f7f1e3 0%, 
-                #e8dcc0 25%, 
-                #d4c5a9 50%, 
-                #c9b99b 75%, 
-                #b8a082 100%);
-            background-attachment: fixed;
+            font-family: Georgia, serif;
+            background: linear-gradient(135deg, #f7f1e3, #e8dcc0, #d4c5a9, #c9b99b, #b8a082);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
         }
-
+        
         .container {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
             border-radius: 25px;
             box-shadow: 0 25px 50px rgba(0,0,0,0.1);
             padding: 50px;
             max-width: 550px;
             width: 100%;
             text-align: center;
-            border: 1px solid rgba(139, 125, 107, 0.2);
         }
-
+        
         h1 {
             color: #5d5341;
             margin-bottom: 35px;
-            font-size: 2.8em;
+            font-size: 2.5em;
             font-weight: 300;
-            letter-spacing: 2px;
         }
-
-        .form-group {
-            margin-bottom: 20px;
-            text-align: right;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: #5d5341;
-            font-size: 1.1em;
-        }
-
-        input[type="text"], input[type="password"] {
+        
+        input {
             width: 100%;
             padding: 18px 20px;
             border: 2px solid rgba(139, 125, 107, 0.3);
             border-radius: 15px;
             font-size: 16px;
             text-align: right;
-            background: rgba(255, 255, 255, 0.8);
-            color: #5d5341;
+            margin-bottom: 20px;
         }
-
+        
         button {
-            background: linear-gradient(135deg, #8b7d6b 0%, #a69080 50%, #b8a082 100%);
+            background: linear-gradient(135deg, #8b7d6b, #a69080, #b8a082);
             color: white;
             border: none;
             padding: 18px 35px;
@@ -90,18 +53,21 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            margin: 12px 8px;
-            letter-spacing: 1px;
+            margin: 10px;
             box-shadow: 0 8px 20px rgba(139, 125, 107, 0.3);
         }
-
+        
         button:hover {
             transform: translateY(-3px);
             box-shadow: 0 12px 30px rgba(139, 125, 107, 0.4);
         }
-
-        .hidden { display: none; }
-
+        
+        .gallery-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-size: 14px;
+            padding: 12px 20px;
+        }
+        
         #video {
             width: 100%;
             max-width: 400px;
@@ -109,20 +75,20 @@
             margin: 20px 0;
             box-shadow: 0 15px 35px rgba(139, 125, 107, 0.3);
         }
-
+        
         #canvas { display: none; }
-
-        .counter {
-            font-size: 24px;
-            font-weight: 600;
-            color: #5d5341;
+        
+        .hidden { display: none; }
+        
+        .status {
+            padding: 15px;
+            border-radius: 15px;
             margin: 20px 0;
-            padding: 15px 25px;
-            background: rgba(139, 125, 107, 0.1);
-            border-radius: 25px;
-            display: inline-block;
+            font-weight: 600;
+            background: rgba(144, 183, 121, 0.2);
+            color: #2d4a1f;
         }
-
+        
         .photos-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -132,7 +98,7 @@
             background: rgba(247, 241, 227, 0.3);
             border-radius: 20px;
         }
-
+        
         .photo-item {
             position: relative;
             border-radius: 15px;
@@ -140,169 +106,109 @@
             box-shadow: 0 8px 20px rgba(139, 125, 107, 0.2);
             background: white;
         }
-
+        
         .photo-item img {
             width: 100%;
             height: 160px;
             object-fit: cover;
         }
-
-        .status {
-            margin: 20px 0;
-            padding: 15px;
-            border-radius: 15px;
-            font-weight: 600;
-        }
-
-        .status.ready {
-            background: rgba(144, 183, 121, 0.2);
-            color: #2d4a1f;
-        }
-
-        .gallery-section {
+        
+        .guest-section {
             margin: 30px 0;
             padding: 30px;
             background: rgba(247, 241, 227, 0.6);
             border-radius: 20px;
         }
-
-        .qr-code {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            display: inline-block;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            margin: 20px 0;
-        }
-
-        .share-code {
-            background: #f0f0f0;
-            padding: 15px;
-            border-radius: 10px;
-            font-family: monospace;
-            font-size: 14px;
-            word-break: break-all;
-            margin: 15px 0;
-            border: 2px dashed #8b7d6b;
-        }
-
-        .import-success {
-            background: rgba(144, 183, 121, 0.3);
-            color: #2d4a1f;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
-            text-align: center;
-            font-weight: bold;
+        
+        .guest-section h3 {
+            color: #5d5341;
+            margin-bottom: 20px;
+            font-size: 1.6em;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- דף כניסה -->
-        <div id="loginPage">
+        <!-- דף ראשי -->
+        <div id="mainPage">
             <h1>🤵👰 חתונה מבורכת</h1>
-            <div class="status ready">
-                ✅ האתר מוכן לשימוש!
+            
+            <div class="status">
+                ✅ ברוכים הבאים! צלמו תמונות יפות!
             </div>
-            <div class="form-group">
-                <label for="guestName">שם האורח:</label>
-                <input type="text" id="guestName" placeholder="הכנס את שמך המלא">
+            
+            <label>שם האורח:</label>
+            <input type="text" id="guestName" placeholder="הכנס את שמך המלא">
+            
+            <button onclick="startCamera()">📸 התחל לצלם!</button>
+            
+            <div style="margin-top: 40px; border-top: 2px dashed #ccc; padding-top: 30px;">
+                <button onclick="showGallery()" class="gallery-btn">👑 גלריה (חתן וכלה)</button>
             </div>
-            <button onclick="startCamera()">התחל לצלם</button>
-            <button onclick="showGallery()">צפה בגלריה</button>
         </div>
-
-        <!-- דף מצלמה -->
+        
+        <!-- דף צילום -->
         <div id="cameraPage" class="hidden">
-            <h1>🤳 בואו נצלם!</h1>
-            <div class="counter">
-                נותרו: <span id="remainingPhotos">25</span> תמונות
+            <h1>📸 צילום תמונות</h1>
+            
+            <div style="font-size: 20px; color: #5d5341; margin: 20px 0;">
+                <span id="guestNameDisplay"></span> צולם תמונות
             </div>
+            
             <video id="video" autoplay playsinline muted></video>
             <canvas id="canvas"></canvas>
-            <div>
-                <button onclick="capturePhoto()">📸 צלם תמונה</button>
-                <button onclick="viewMyPhotos()">🖼️ התמונות שלי</button>
-                <button onclick="goBack()">↩️ חזור</button>
-            </div>
+            
+            <div id="photoStatus" class="status" style="display: none;"></div>
+            
+            <button onclick="takePhoto()">📸 צלם תמונה</button>
+            <button onclick="showMyPhotos()">🖼️ התמונות שלי</button>
+            <button onclick="goHome()">🏠 סיימתי</button>
         </div>
-
-        <!-- דף התמונות שלי -->
+        
+        <!-- התמונות שלי -->
         <div id="myPhotosPage" class="hidden">
             <h1>התמונות שלי</h1>
-            <div id="myPhotosGrid" class="photos-grid"></div>
-            <button onclick="shareMyPhotos()">📤 שתף תמונות (QR)</button>
-            <button onclick="scanQRCode()">📷 סרוק QR לקבלת תמונות</button>
-            <button onclick="goBackToCamera()">חזור לצילום</button>
-            <button onclick="goBack()">חזור לדף הבית</button>
+            <div id="myPhotosList" class="photos-grid"></div>
+            <button onclick="goToCamera()">📸 צלם עוד</button>
+            <button onclick="goHome()">🏠 חזור הביתה</button>
         </div>
-
-        <!-- דף כניסה לגלריה -->
+        
+        <!-- כניסה לגלריה -->
         <div id="galleryLoginPage" class="hidden">
-            <h1>🔒 גלריה מוגנת</h1>
-            <div class="form-group">
-                <label for="password">סיסמה:</label>
-                <input type="password" id="password" placeholder="הכנס סיסמה">
-            </div>
-            <button onclick="checkPassword()">כניסה לגלריה</button>
-            <button onclick="goBack()">חזור</button>
-        </div>
-
-        <!-- דף שיתוף QR -->
-        <div id="qrSharePage" class="hidden">
-            <h1>📤 שיתוף תמונות</h1>
-            <div class="status ready">
-                <p>הצג את ה-QR הזה לאורחים אחרים כדי שיקבלו את התמונות שלך!</p>
-                <p style="font-size: 14px; color: #8b7d6b;">
-                    💡 <strong>איך זה עובד:</strong><br>
-                    1. הראה את ה-QR לאורח אחר<br>
-                    2. הוא יסרוק עם המצלמה או יעתיק את הקוד<br>
-                    3. התמונות שלך יעברו אליו!
-                </p>
-            </div>
-            <div id="qrCodeContainer" style="text-align: center; margin: 30px 0;">
-                <!-- כאן יופיע ה-QR קוד -->
-            </div>
-            <div id="shareInfo" style="text-align: center; margin: 20px 0;"></div>
-            <button onclick="goBack()">↩️ חזור</button>
-        </div>
-
-        <!-- דף סריקת QR -->
-        <div id="qrScanPage" class="hidden">
-            <h1>📷 קבלת תמונות</h1>
-            <div class="status ready">
-                <p><strong>3 דרכים לקבל תמונות:</strong></p>
-                <p>🔸 <strong>סריקת QR:</strong> פתח מצלמה → סרוק QR → העתק הקוד<br>
-                🔸 <strong>העתקה:</strong> בקש מהאורח להראות את הקוד<br>
-                🔸 <strong>WhatsApp:</strong> בקש לשלוח את הקוד בהודעה</p>
-            </div>
-            <div style="margin: 20px 0;">
-                <input type="text" id="qrInput" placeholder="הדבק כאן את הקוד שקיבלת מאורח אחר..." style="width: 100%; margin-bottom: 15px;">
-                <button onclick="importPhotosFromCode()" style="background: #4CAF50;">📥 ייבא תמונות</button>
+            <h1>👑 גלריה פרטית</h1>
+            
+            <div class="status">
+                כניסה לחתן וכלה בלבד
             </div>
             
-            <div style="margin: 30px 0; padding: 20px; background: rgba(247, 241, 227, 0.6); border-radius: 15px;">
-                <h3 style="color: #5d5341; margin-bottom: 15px;">💡 איך לסרוק QR:</h3>
-                <p style="color: #8b7d6b; font-size: 14px; line-height: 1.6;">
-                    📱 <strong>באייפון:</strong> פתח מצלמה → כוון על QR → לחץ על הקישור<br>
-                    🤖 <strong>באנדרואיד:</strong> פתח מצלמה → כוון על QR → לחץ על ההתראה<br>
-                    💬 <strong>או בWhatsApp:</strong> לחץ 📎 → מסמך → סרוק מסמך
-                </p>
-            </div>
+            <label>סיסמה:</label>
+            <input type="password" id="galleryPassword" placeholder="הכנס סיסמה">
             
-            <button onclick="goBack()">↩️ חזור</button>
+            <button onclick="checkPassword()">🔓 כניסה</button>
+            <button onclick="goHome()">↩️ חזור</button>
+        </div>
+        
+        <!-- גלריה פרטית -->
+        <div id="galleryPage" class="hidden">
+            <h1>👑 הגלריה שלכם</h1>
+            
+            <div id="galleryStats" class="status"></div>
+            
+            <div id="allPhotosDisplay"></div>
+            
+            <button onclick="downloadAll()">📥 הורד הכל</button>
+            <button onclick="refreshGallery()">🔄 רענן</button>
+            <button onclick="goHome()">🏠 חזור</button>
         </div>
     </div>
 
     <script>
-        // משתנים פשוטים
+        // הגדרות
+        const PASSWORD = 'wedding123'; // שנה את הסיסמה!
         let currentGuest = '';
-        let stream = null;
-        const maxPhotos = 25;
-        const galleryPassword = 'wedding2024';
+        let cameraStream = null;
 
-        // פונקציות ניווט
+        // ניווט בין דפים
         function showPage(pageId) {
             document.querySelectorAll('.container > div').forEach(div => {
                 div.classList.add('hidden');
@@ -310,335 +216,199 @@
             document.getElementById(pageId).classList.remove('hidden');
         }
 
-        function goBack() {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-                stream = null;
+        function goHome() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
             }
-            showPage('loginPage');
+            showPage('mainPage');
         }
 
-        function goBackToCamera() {
+        function goToCamera() {
             showPage('cameraPage');
+        }
+
+        function showGallery() {
+            showPage('galleryLoginPage');
         }
 
         // התחלת מצלמה
         async function startCamera() {
-            const guestName = document.getElementById('guestName').value.trim();
-            if (!guestName) {
+            const name = document.getElementById('guestName').value.trim();
+            if (!name) {
                 alert('אנא הכנס את שמך');
                 return;
             }
 
-            currentGuest = guestName;
+            currentGuest = name;
+            document.getElementById('guestNameDisplay').textContent = name;
 
             try {
-                alert('🎥 הדפדפן יבקש הרשאה למצלמה. לחץ "אפשר"');
-                
-                stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: 'user' } // סלפי
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'user' } // מצלמה קדמית
                 });
-                
+
                 const video = document.getElementById('video');
-                video.srcObject = stream;
-                
-                video.onloadedmetadata = () => {
-                    video.play();
-                };
+                video.srcObject = cameraStream;
                 
                 showPage('cameraPage');
-                updateCounter();
-                
+                showStatus('📸 מוכן לצילום! לחץ על צלם תמונה');
+
             } catch (error) {
-                console.error('שגיאה במצלמה:', error);
                 alert('לא ניתן לפתוח את המצלמה. ודא שנתת הרשאה.');
             }
         }
 
         // צילום תמונה
-        function capturePhoto() {
-            if (!currentGuest) {
-                alert('שגיאה: אין שם אורח');
-                return;
-            }
-
-            const photos = JSON.parse(localStorage.getItem('wedding-photos') || '{}');
-            const myPhotos = photos[currentGuest] || [];
-
-            if (myPhotos.length >= maxPhotos) {
-                alert(`הגעת למקסימום של ${maxPhotos} תמונות`);
-                return;
-            }
+        function takePhoto() {
+            if (!currentGuest) return;
 
             const video = document.getElementById('video');
             const canvas = document.getElementById('canvas');
-            
+
             if (!video.videoWidth) {
-                alert('המצלמה לא מוכנה. המתן רגע ונסה שוב');
+                alert('המצלמה לא מוכנה');
                 return;
             }
 
             // צילום
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0);
+            canvas.getContext('2d').drawImage(video, 0, 0);
 
-            const imageData = canvas.toDataURL('image/jpeg', 0.8);
-            
             const photoData = {
                 id: Date.now(),
-                data: imageData,
-                timestamp: new Date().toLocaleString('he-IL'),
-                guest: currentGuest
+                imageData: canvas.toDataURL('image/jpeg', 0.8),
+                guest: currentGuest,
+                time: new Date().toLocaleString('he-IL')
             };
 
-            // שמירה
-            if (!photos[currentGuest]) {
-                photos[currentGuest] = [];
-            }
-            photos[currentGuest].push(photoData);
-            localStorage.setItem('wedding-photos', JSON.stringify(photos));
-
-            updateCounter();
+            // שמירת התמונה
+            savePhoto(photoData);
             
-            const remaining = maxPhotos - photos[currentGuest].length;
-            if (remaining > 0) {
-                alert(`תמונה נשמרה! נותרו ${remaining} תמונות`);
-            } else {
-                alert('סיימת את כל התמונות! תודה 🎉');
-            }
+            const photoCount = getGuestPhotos(currentGuest).length;
+            showStatus(`✅ תמונה נשמרה! יש לך כעת ${photoCount} תמונות`);
         }
 
-        // עדכון מונה
-        function updateCounter() {
-            const photos = JSON.parse(localStorage.getItem('wedding-photos') || '{}');
-            const myPhotos = photos[currentGuest] || [];
-            const remaining = maxPhotos - myPhotos.length;
+        // שמירת תמונה
+        function savePhoto(photoData) {
+            let allPhotos = JSON.parse(localStorage.getItem('allWeddingPhotos') || '{}');
             
-            document.getElementById('remainingPhotos').textContent = remaining;
+            if (!allPhotos[currentGuest]) {
+                allPhotos[currentGuest] = [];
+            }
+            
+            allPhotos[currentGuest].push(photoData);
+            localStorage.setItem('allWeddingPhotos', JSON.stringify(allPhotos));
+        }
+
+        // קבלת תמונות של אורח
+        function getGuestPhotos(guestName) {
+            const allPhotos = JSON.parse(localStorage.getItem('allWeddingPhotos') || '{}');
+            return allPhotos[guestName] || [];
         }
 
         // הצגת התמונות שלי
-        function viewMyPhotos() {
-            if (!currentGuest) {
-                alert('אין שם אורח');
-                return;
+        function showMyPhotos() {
+            const myPhotos = getGuestPhotos(currentGuest);
+            const grid = document.getElementById('myPhotosList');
+
+            if (myPhotos.length === 0) {
+                grid.innerHTML = '<p style="text-align: center;">אין תמונות עדיין</p>';
+            } else {
+                grid.innerHTML = '';
+                myPhotos.forEach((photo, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'photo-item';
+                    div.innerHTML = `
+                        <img src="${photo.imageData}" alt="תמונה ${index + 1}">
+                        <div style="position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; padding: 3px 6px; border-radius: 5px; font-size: 12px;">
+                            ${index + 1}
+                        </div>
+                    `;
+                    grid.appendChild(div);
+                });
             }
 
             showPage('myPhotosPage');
-
-            const photos = JSON.parse(localStorage.getItem('wedding-photos') || '{}');
-            const myPhotos = photos[currentGuest] || [];
-            const grid = document.getElementById('myPhotosGrid');
-
-            if (myPhotos.length === 0) {
-                grid.innerHTML = '<p style="text-align: center; color: #888;">אין תמונות עדיין. חזור וצלם!</p>';
-                return;
-            }
-
-            grid.innerHTML = '';
-            myPhotos.forEach((photo, index) => {
-                const photoDiv = document.createElement('div');
-                photoDiv.className = 'photo-item';
-                photoDiv.innerHTML = `
-                    <img src="${photo.data}" alt="תמונה ${index + 1}">
-                `;
-                grid.appendChild(photoDiv);
-            });
         }
 
-        // גלריה
-        function showGallery() {
-            showPage('galleryLoginPage');
-        }
-
+        // בדיקת סיסמה לגלריה
         function checkPassword() {
-            const password = document.getElementById('password').value;
-            if (password === galleryPassword) {
-                loadGallery();
+            const password = document.getElementById('galleryPassword').value;
+            if (password === PASSWORD) {
                 showPage('galleryPage');
+                loadGallery();
             } else {
-                alert('סיסמה שגויה');
+                alert('סיסמה שגויה!');
             }
         }
 
+        // טעינת הגלריה הפרטית
         function loadGallery() {
-            const photos = JSON.parse(localStorage.getItem('wedding-photos') || '{}');
-            const galleryContent = document.getElementById('galleryContent');
+            const allPhotos = JSON.parse(localStorage.getItem('allWeddingPhotos') || '{}');
+            const display = document.getElementById('allPhotosDisplay');
+            const stats = document.getElementById('galleryStats');
 
-            if (Object.keys(photos).length === 0) {
-                galleryContent.innerHTML = '<p style="text-align: center;">אין תמונות עדיין</p>';
+            if (Object.keys(allPhotos).length === 0) {
+                display.innerHTML = '<p style="text-align: center;">אין תמונות עדיין</p>';
+                stats.textContent = 'עדיין אין תמונות מאורחים';
                 return;
             }
 
             let totalPhotos = 0;
-            galleryContent.innerHTML = '';
+            display.innerHTML = '';
 
-            Object.keys(photos).forEach(guestName => {
-                const guestPhotos = photos[guestName];
+            Object.keys(allPhotos).forEach(guestName => {
+                const guestPhotos = allPhotos[guestName];
                 totalPhotos += guestPhotos.length;
 
-                if (guestPhotos.length > 0) {
-                    const section = document.createElement('div');
-                    section.className = 'gallery-section';
-                    
-                    const title = document.createElement('h3');
-                    title.textContent = `${guestName} (${guestPhotos.length} תמונות)`;
-                    section.appendChild(title);
-                    
-                    const grid = document.createElement('div');
-                    grid.className = 'photos-grid';
-                    
-                    guestPhotos.forEach(photo => {
-                        const photoDiv = document.createElement('div');
-                        photoDiv.className = 'photo-item';
-                        photoDiv.innerHTML = `<img src="${photo.data}" alt="תמונה של ${guestName}">`;
-                        grid.appendChild(photoDiv);
-                    });
-                    
-                    section.appendChild(grid);
-                    galleryContent.appendChild(section);
-                }
-            });
+                const section = document.createElement('div');
+                section.className = 'guest-section';
 
-            // סיכום
-            const summary = document.createElement('div');
-            summary.className = 'status ready';
-            summary.style.textAlign = 'center';
-            summary.style.fontSize = '18px';
-            summary.innerHTML = `🎉 סה"כ: ${totalPhotos} תמונות מ-${Object.keys(photos).length} אורחים`;
-            galleryContent.insertBefore(summary, galleryContent.firstChild);
-        }
+                const title = document.createElement('h3');
+                title.textContent = `${guestName} (${guestPhotos.length} תמונות)`;
+                section.appendChild(title);
 
-        // שיתוף תמונות באמצעות QR
-        function shareMyPhotos() {
-            if (!currentGuest) {
-                alert('אין שם אורח');
-                return;
-            }
+                const grid = document.createElement('div');
+                grid.className = 'photos-grid';
 
-            const photos = JSON.parse(localStorage.getItem('wedding-photos') || '{}');
-            const myPhotos = photos[currentGuest] || [];
-
-            if (myPhotos.length === 0) {
-                alert('אין תמונות לשיתוף. צלם תמונות קודם!');
-                return;
-            }
-
-            // יצירת קוד משותף
-            const shareData = {
-                guest: currentGuest,
-                photos: myPhotos,
-                timestamp: new Date().toISOString()
-            };
-
-            const shareCode = btoa(JSON.stringify(shareData)); // הצפנה פשוטה
-            
-            // מעבר לדף השיתוף
-            showPage('qrSharePage');
-            
-            // יצירת QR קוד מיד
-            const qrContainer = document.getElementById('qrCodeContainer');
-            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(shareCode)}`;
-            
-            qrContainer.innerHTML = `
-                <div style="padding: 20px; background: white; border-radius: 15px; display: inline-block; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
-                    <img src="${qrUrl}" alt="QR Code" style="width: 250px; height: 250px; border: 3px solid #8b7d6b; border-radius: 10px;" onload="console.log('QR loaded successfully')" onerror="console.error('QR failed to load')">
-                    <p style="text-align: center; margin-top: 15px; color: #5d5341; font-size: 16px; font-weight: bold;">
-                        📱 סרוק עם המצלמה
-                    </p>
-                </div>
-                <div class="share-code">
-                    <strong>📋 קוד לשיתוף:</strong><br>
-                    <textarea readonly style="width: 100%; height: 60px; font-family: monospace; font-size: 12px; padding: 10px; border: 2px dashed #8b7d6b; background: #f9f9f9; resize: none;" onclick="this.select()">${shareCode}</textarea>
-                    <p style="font-size: 12px; color: #888; margin-top: 5px;">👆 לחץ להעתקה</p>
-                </div>
-                <p style="color: #8b7d6b; font-size: 14px; text-align: center; margin-top: 15px;">
-                    💡 האורח יכול לסרוק את ה-QR או להעתיק את הקוד
-                </p>
-            `;
-
-            document.getElementById('shareInfo').innerHTML = `
-                <div class="status ready">
-                    🎉 מוכן לשיתוף ${myPhotos.length} תמונות של ${currentGuest}!
-                </div>
-            `;
-        }
-
-        // מחיקת הפונקציה הישנה שלא עובדת
-        // generateSimpleQR מוסרת - עכשיו הכל ב-shareMyPhotos
-
-        // סריקת QR קוד
-        function scanQRCode() {
-            showPage('qrScanPage');
-        }
-
-        // ייבוא תמונות מקוד
-        function importPhotosFromCode() {
-            const code = document.getElementById('qrInput').value.trim();
-            
-            if (!code) {
-                alert('אנא הכנס קוד או סרוק QR');
-                return;
-            }
-
-            try {
-                // פענוח הקוד
-                const shareData = JSON.parse(atob(code));
-                
-                if (!shareData.guest || !shareData.photos) {
-                    throw new Error('קוד לא תקין');
-                }
-
-                // ייבוא התמונות
-                const allPhotos = JSON.parse(localStorage.getItem('wedding-photos') || '{}');
-                
-                // מיזוג התמונות החדשות
-                if (!allPhotos[shareData.guest]) {
-                    allPhotos[shareData.guest] = [];
-                }
-
-                let newPhotosCount = 0;
-                shareData.photos.forEach(photo => {
-                    // בדיקה שהתמונה לא קיימת כבר
-                    const exists = allPhotos[shareData.guest].some(existing => existing.id === photo.id);
-                    if (!exists) {
-                        allPhotos[shareData.guest].push(photo);
-                        newPhotosCount++;
-                    }
+                guestPhotos.forEach((photo, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'photo-item';
+                    div.innerHTML = `
+                        <img src="${photo.imageData}" alt="תמונה של ${guestName}">
+                        <div style="position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; padding: 3px 6px; border-radius: 5px; font-size: 10px;">
+                            ${photo.time}
+                        </div>
+                    `;
+                    grid.appendChild(div);
                 });
 
-                localStorage.setItem('wedding-photos', JSON.stringify(allPhotos));
+                section.appendChild(grid);
+                display.appendChild(section);
+            });
 
-                // הצגת הודעת הצלחה
-                document.getElementById('qrInput').value = '';
-                document.getElementById('qrScanPage').innerHTML += `
-                    <div class="import-success">
-                        ✅ ייובאו בהצלחה ${newPhotosCount} תמונות חדשות מ-${shareData.guest}!
-                    </div>
-                `;
-
-                setTimeout(() => {
-                    goBack();
-                }, 2000);
-
-            } catch (error) {
-                console.error('שגיאה בייבוא:', error);
-                alert('קוד לא תקין. נסה שוב.');
-            }
+            stats.textContent = `📊 סה"כ: ${totalPhotos} תמונות מ-${Object.keys(allPhotos).length} אורחים`;
         }
 
-        function downloadAllPhotos() {
-            const photos = JSON.parse(localStorage.getItem('wedding-photos') || '{}');
+        // רענון גלריה
+        function refreshGallery() {
+            loadGallery();
+            showStatus('🔄 הגלריה רועננה!');
+        }
+
+        // הורדת כל התמונות
+        function downloadAll() {
+            const allPhotos = JSON.parse(localStorage.getItem('allWeddingPhotos') || '{}');
             let count = 0;
 
-            Object.keys(photos).forEach(guestName => {
-                photos[guestName].forEach((photo, index) => {
+            Object.keys(allPhotos).forEach(guestName => {
+                allPhotos[guestName].forEach((photo, index) => {
                     setTimeout(() => {
                         const link = document.createElement('a');
-                        link.download = `${guestName}_תמונה_${index + 1}.jpg`;
-                        link.href = photo.data;
+                        link.download = `${guestName}_${index + 1}.jpg`;
+                        link.href = photo.imageData;
                         link.click();
                     }, count * 100);
                     count++;
@@ -647,14 +417,21 @@
 
             if (count > 0) {
                 alert(`מוריד ${count} תמונות...`);
-            } else {
-                alert('אין תמונות להורדה');
             }
         }
 
-        // טעינה ראשונית
+        // הצגת סטטוס
+        function showStatus(message) {
+            const statusDiv = document.getElementById('photoStatus');
+            if (statusDiv) {
+                statusDiv.textContent = message;
+                statusDiv.style.display = 'block';
+            }
+        }
+
+        // התחלה
         document.addEventListener('DOMContentLoaded', function() {
-            showPage('loginPage');
+            showPage('mainPage');
         });
     </script>
 </body>
