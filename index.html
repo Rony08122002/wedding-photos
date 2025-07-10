@@ -290,7 +290,7 @@
             showStatus(`✅ תמונה נשמרה! יש לך כעת ${photoCount} תמונות`);
         }
 
-        // שמירת תמונה ושליחה לאימייל
+        // שמירת תמונה ושליחה ל-Discord
         async function savePhoto(photoData) {
             // שמירה מקומית כגיבוי
             let allPhotos = JSON.parse(localStorage.getItem('allWeddingPhotos') || '{}');
@@ -300,34 +300,39 @@
             allPhotos[currentGuest].push(photoData);
             localStorage.setItem('allWeddingPhotos', JSON.stringify(allPhotos));
 
-            // שליחה לאימייל דרך Formspree
+            // שליחה ל-Discord
             try {
-                showStatus('📤 שולח תמונה לחתן והכלה...');
+                showStatus('📤 שולח תמונה ל-Discord...');
                 
+                // הכנת הנתונים ל-Discord
                 const formData = new FormData();
-                formData.append('guest_name', photoData.guest);
-                formData.append('timestamp', photoData.time);
-                formData.append('message', `תמונה חדשה מ-${photoData.guest} בחתונה!`);
                 
                 // המרת התמונה לקובץ
                 const response = await fetch(photoData.imageData);
                 const blob = await response.blob();
-                formData.append('photo', blob, `${photoData.guest}_${photoData.id}.jpg`);
+                formData.append('file', blob, `${photoData.guest}_${photoData.id}.jpg`);
+                
+                // הודעה עם פרטים
+                const message = {
+                    content: `🎉 **תמונה חדשה מהחתונה!**\n\n👤 **אורח:** ${photoData.guest}\n🕐 **זמן:** ${photoData.time}\n📸 **מספר תמונה:** ${getGuestPhotos(currentGuest).length}`
+                };
+                
+                formData.append('payload_json', JSON.stringify(message));
 
-                // שליחה ל-Formspree עם ה-ID שלך
-                const submitResponse = await fetch('https://formspree.io/f/mqabrebd', {
+                // שליחה ל-Discord Webhook
+                const webhookResponse = await fetch('https://discord.com/api/webhooks/1392889391546106098/Wdy65BtcTioI3AFfW0MdepV3WsvQo_26nezIsMOV2U1W-g0zYH7Jao-rinatGrDoEQnc', {
                     method: 'POST',
                     body: formData
                 });
 
-                if (submitResponse.ok) {
-                    showStatus('✅ תמונה נשלחה בהצלחה לחתן והכלה!');
+                if (webhookResponse.ok) {
+                    showStatus('✅ תמונה נשלחה בהצלחה ל-Discord!');
                 } else {
-                    throw new Error('שגיאה בשליחה');
+                    throw new Error('שגיאה בשליחה ל-Discord');
                 }
             } catch (error) {
-                console.error('שגיאה בשליחת תמונה:', error);
-                showStatus('⚠️ תמונה נשמרה מקומית, אבל לא נשלחה לאימייל');
+                console.error('שגיאה בשליחת תמונה ל-Discord:', error);
+                showStatus('⚠️ תמונה נשמרה מקומית, אבל לא נשלחה ל-Discord');
             }
         }
 
