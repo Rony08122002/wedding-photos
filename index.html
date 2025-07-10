@@ -1,4 +1,14 @@
-<!DOCTYPE html>
+<!-- דף הגלריה -->
+        <div id="galleryPage" class="hidden">
+            <h1>📷 גלריית החתונה</h1>
+            <div class="status ready">
+                <p>כאן תראה את כל התמונות מכל האורחים שייבאת</p>
+            </div>
+            <div id="galleryContent"></div>
+            <button onclick="downloadAllPhotos()">📥 הורד תמונות</button>
+            <button onclick="loadGallery()">🔄 רענן</button>
+            <button onclick="goBack()">↩️ חזור</button>
+        </div><!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -156,11 +166,34 @@
             border-radius: 20px;
         }
 
-        .gallery-section h3 {
-            color: #5d5341;
-            margin-bottom: 20px;
-            font-size: 1.6em;
+        .qr-code {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        .share-code {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            word-break: break-all;
+            margin: 15px 0;
+            border: 2px dashed #8b7d6b;
+        }
+
+        .import-success {
+            background: rgba(144, 183, 121, 0.3);
+            color: #2d4a1f;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
             text-align: center;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -199,6 +232,8 @@
         <div id="myPhotosPage" class="hidden">
             <h1>התמונות שלי</h1>
             <div id="myPhotosGrid" class="photos-grid"></div>
+            <button onclick="shareMyPhotos()">📤 שתף תמונות (QR)</button>
+            <button onclick="scanQRCode()">📷 סרוק QR לקבלת תמונות</button>
             <button onclick="goBackToCamera()">חזור לצילום</button>
             <button onclick="goBack()">חזור לדף הבית</button>
         </div>
@@ -214,12 +249,48 @@
             <button onclick="goBack()">חזור</button>
         </div>
 
-        <!-- דף הגלריה -->
-        <div id="galleryPage" class="hidden">
-            <h1>📷 גלריית החתונה</h1>
-            <div id="galleryContent"></div>
-            <button onclick="downloadAllPhotos()">📥 הורד תמונות</button>
-            <button onclick="loadGallery()">🔄 רענן</button>
+        <!-- דף שיתוף QR -->
+        <div id="qrSharePage" class="hidden">
+            <h1>📤 שיתוף תמונות</h1>
+            <div class="status ready">
+                <p>הצג את ה-QR הזה לאורחים אחרים כדי שיקבלו את התמונות שלך!</p>
+                <p style="font-size: 14px; color: #8b7d6b;">
+                    💡 <strong>איך זה עובד:</strong><br>
+                    1. הראה את ה-QR לאורח אחר<br>
+                    2. הוא יסרוק עם המצלמה או יעתיק את הקוד<br>
+                    3. התמונות שלך יעברו אליו!
+                </p>
+            </div>
+            <div id="qrCodeContainer" style="text-align: center; margin: 30px 0;">
+                <!-- כאן יופיע ה-QR קוד -->
+            </div>
+            <div id="shareInfo" style="text-align: center; margin: 20px 0;"></div>
+            <button onclick="goBack()">↩️ חזור</button>
+        </div>
+
+        <!-- דף סריקת QR -->
+        <div id="qrScanPage" class="hidden">
+            <h1>📷 קבלת תמונות</h1>
+            <div class="status ready">
+                <p><strong>3 דרכים לקבל תמונות:</strong></p>
+                <p>🔸 <strong>סריקת QR:</strong> פתח מצלמה → סרוק QR → העתק הקוד<br>
+                🔸 <strong>העתקה:</strong> בקש מהאורח להראות את הקוד<br>
+                🔸 <strong>WhatsApp:</strong> בקש לשלוח את הקוד בהודעה</p>
+            </div>
+            <div style="margin: 20px 0;">
+                <input type="text" id="qrInput" placeholder="הדבק כאן את הקוד שקיבלת מאורח אחר..." style="width: 100%; margin-bottom: 15px;">
+                <button onclick="importPhotosFromCode()" style="background: #4CAF50;">📥 ייבא תמונות</button>
+            </div>
+            
+            <div style="margin: 30px 0; padding: 20px; background: rgba(247, 241, 227, 0.6); border-radius: 15px;">
+                <h3 style="color: #5d5341; margin-bottom: 15px;">💡 איך לסרוק QR:</h3>
+                <p style="color: #8b7d6b; font-size: 14px; line-height: 1.6;">
+                    📱 <strong>באייפון:</strong> פתח מצלמה → כוון על QR → לחץ על הקישור<br>
+                    🤖 <strong>באנדרואיד:</strong> פתח מצלמה → כוון על QR → לחץ על ההתראה<br>
+                    💬 <strong>או בWhatsApp:</strong> לחץ 📎 → מסמך → סרוק מסמך
+                </p>
+            </div>
+            
             <button onclick="goBack()">↩️ חזור</button>
         </div>
     </div>
@@ -438,6 +509,135 @@
             summary.style.fontSize = '18px';
             summary.innerHTML = `🎉 סה"כ: ${totalPhotos} תמונות מ-${Object.keys(photos).length} אורחים`;
             galleryContent.insertBefore(summary, galleryContent.firstChild);
+        }
+
+        // שיתוף תמונות באמצעות QR
+        function shareMyPhotos() {
+            if (!currentGuest) {
+                alert('אין שם אורח');
+                return;
+            }
+
+            const photos = JSON.parse(localStorage.getItem('wedding-photos') || '{}');
+            const myPhotos = photos[currentGuest] || [];
+
+            if (myPhotos.length === 0) {
+                alert('אין תמונות לשיתוף. צלם תמונות קודם!');
+                return;
+            }
+
+            showPage('qrSharePage');
+
+            // יצירת קוד משותף
+            const shareData = {
+                guest: currentGuest,
+                photos: myPhotos,
+                timestamp: new Date().toISOString()
+            };
+
+            const shareCode = btoa(JSON.stringify(shareData)); // הצפנה פשוטה
+            
+            // יצירת QR קוד
+            const qrContainer = document.getElementById('qrCodeContainer');
+            qrContainer.innerHTML = `
+                <div class="qr-code">
+                    <div id="qrcode"></div>
+                </div>
+                <div class="share-code">
+                    <strong>קוד לשיתוף:</strong><br>
+                    ${shareCode}
+                </div>
+                <p style="color: #8b7d6b; font-size: 14px;">
+                    האורח יכול לסרוק את ה-QR או להעתיק את הקוד
+                </p>
+            `;
+
+            // יצירת QR פשוט עם טקסט
+            generateSimpleQR(shareCode);
+
+            document.getElementById('shareInfo').innerHTML = `
+                <div class="status ready">
+                    🎉 מוכן לשיתוף ${myPhotos.length} תמונות של ${currentGuest}
+                </div>
+            `;
+        }
+
+        // יצירת QR קוד אמיתי
+        function generateSimpleQR(text) {
+            const qrDiv = document.getElementById('qrcode');
+            if (!qrDiv) return;
+
+            // שימוש ב-API חינמי ליצירת QR
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(text)}`;
+            
+            qrDiv.innerHTML = `
+                <div style="padding: 15px; background: white; border-radius: 10px; display: inline-block;">
+                    <img src="${qrUrl}" alt="QR Code" style="width: 200px; height: 200px; border: 2px solid #8b7d6b; border-radius: 8px;">
+                    <p style="text-align: center; margin-top: 10px; color: #5d5341; font-size: 14px;">
+                        📱 סרוק עם המצלמה
+                    </p>
+                </div>
+            `;
+        }
+
+        // סריקת QR קוד
+        function scanQRCode() {
+            showPage('qrScanPage');
+        }
+
+        // ייבוא תמונות מקוד
+        function importPhotosFromCode() {
+            const code = document.getElementById('qrInput').value.trim();
+            
+            if (!code) {
+                alert('אנא הכנס קוד או סרוק QR');
+                return;
+            }
+
+            try {
+                // פענוח הקוד
+                const shareData = JSON.parse(atob(code));
+                
+                if (!shareData.guest || !shareData.photos) {
+                    throw new Error('קוד לא תקין');
+                }
+
+                // ייבוא התמונות
+                const allPhotos = JSON.parse(localStorage.getItem('wedding-photos') || '{}');
+                
+                // מיזוג התמונות החדשות
+                if (!allPhotos[shareData.guest]) {
+                    allPhotos[shareData.guest] = [];
+                }
+
+                let newPhotosCount = 0;
+                shareData.photos.forEach(photo => {
+                    // בדיקה שהתמונה לא קיימת כבר
+                    const exists = allPhotos[shareData.guest].some(existing => existing.id === photo.id);
+                    if (!exists) {
+                        allPhotos[shareData.guest].push(photo);
+                        newPhotosCount++;
+                    }
+                });
+
+                localStorage.setItem('wedding-photos', JSON.stringify(allPhotos));
+
+                // הצגת הודעת הצלחה
+                document.getElementById('qrInput').value = '';
+                document.getElementById('qrScanPage').innerHTML += `
+                    <div class="import-success">
+                        ✅ ייובאו בהצלחה ${newPhotosCount} תמונות חדשות מ-${shareData.guest}!
+                    </div>
+                `;
+
+                setTimeout(() => {
+                    goBack();
+                }, 2000);
+
+            } catch (error) {
+                console.error('שגיאה בייבוא:', error);
+                alert('קוד לא תקין. נסה שוב.');
+            }
         }
 
         function downloadAllPhotos() {
