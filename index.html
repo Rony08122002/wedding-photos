@@ -22,6 +22,24 @@
             position: relative;
         }
 
+        /* תחביר רקע לפלאפון */
+        @media (max-width: 768px) {
+            body {
+                background-size: 150px 150px, 120px 120px;
+                padding: 15px 10px;
+                align-items: flex-start;
+                padding-top: 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                background-size: 120px 120px, 100px 100px;
+                padding: 10px 5px;
+                padding-top: 20px;
+            }
+        }
+
         body::before {
             content: '';
             position: fixed;
@@ -55,21 +73,158 @@
                 0 25px 50px rgba(0,0,0,0.1),
                 0 10px 30px rgba(139, 125, 107, 0.2),
                 inset 0 1px 0 rgba(255,255,255,0.6);
-            padding: 50px;
+            padding: 30px 25px;
             max-width: 550px;
             width: 100%;
             text-align: center;
             border: 2px solid rgba(139, 125, 107, 0.2);
             position: relative;
             overflow: hidden;
+            margin: 10px;
+        }
+
+        /* עיצוב רספונסיבי לפלאפון */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+                align-items: flex-start;
+                min-height: auto;
+                padding-top: 20px;
+            }
+            
+            .container {
+                padding: 25px 20px;
+                margin: 5px;
+                border-radius: 20px;
+                max-width: 100%;
+                min-height: auto;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+                padding-top: 35px;
+                margin-bottom: 25px;
+                line-height: 1.3;
+            }
+            
+            h1::before {
+                font-size: 1em;
+                letter-spacing: 4px;
+                top: 3px;
+            }
+            
+            button {
+                padding: 15px 25px;
+                font-size: 15px;
+                margin: 8px 5px;
+                width: 100%;
+                max-width: 280px;
+            }
+            
+            input {
+                padding: 15px 18px;
+                font-size: 16px;
+                border-radius: 12px;
+            }
+            
+            .form-group {
+                margin-bottom: 20px;
+            }
+            
+            label {
+                font-size: 1em;
+                margin-bottom: 12px;
+            }
+            
+            #video {
+                max-width: 100%;
+                width: 95%;
+                margin: 15px 0;
+            }
+            
+            .photos-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .photo-item img {
+                height: 120px;
+            }
+            
+            .status {
+                padding: 12px;
+                font-size: 14px;
+                margin: 15px 0;
+            }
+            
+            .guest-section {
+                padding: 20px 15px;
+                margin: 20px 0;
+            }
+            
+            .guest-section h3 {
+                font-size: 1.3em;
+                margin-bottom: 15px;
+            }
+            
+            .counter {
+                font-size: 20px;
+                padding: 12px 20px;
+                margin: 15px 0;
+            }
+            
+            .gallery-btn {
+                padding: 10px 18px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 15px;
+                border-radius: 15px;
+            }
+            
+            h1 {
+                font-size: 1.6em;
+                padding-top: 30px;
+            }
+            
+            h1::before {
+                font-size: 0.9em;
+                letter-spacing: 3px;
+            }
+            
+            button {
+                padding: 14px 20px;
+                font-size: 14px;
+                width: 100%;
+                max-width: none;
+            }
+            
+            .photos-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+                padding: 12px;
+            }
+            
+            .photo-item img {
+                height: 100px;
+            }
+            
+            input {
+                padding: 14px 16px;
+                font-size: 15px;
+            }
         }
 
         .container::before {
             content: '🌿🌸🍃';
             position: absolute;
-            top: 20px;
-            left: 25px;
-            font-size: 28px;
+            top: 15px;
+            left: 20px;
+            font-size: 20px;
             opacity: 0.5;
             animation: natureSway 10s infinite ease-in-out;
             transform-origin: bottom center;
@@ -78,11 +233,51 @@
         .container::after {
             content: '🌺🌿🌼';
             position: absolute;
-            bottom: 25px;
-            right: 30px;
-            font-size: 24px;
+            bottom: 20px;
+            right: 25px;
+            font-size: 18px;
             opacity: 0.6;
             animation: petalDance 12s infinite ease-in-out reverse;
+        }
+
+        /* תחביר את האלמנטים הדקורטיביים בפלאפון */
+        @media (max-width: 768px) {
+            .container::before {
+                font-size: 16px;
+                top: 10px;
+                left: 15px;
+            }
+            
+            .container::after {
+                font-size: 14px;
+                bottom: 15px;
+                right: 20px;
+            }
+            
+            .form-group::before {
+                font-size: 14px;
+                left: 8px;
+            }
+            
+            .form-group::after {
+                font-size: 12px;
+                right: 8px;
+            }
+            
+            button::after {
+                font-size: 12px;
+                right: 12px;
+            }
+            
+            .gallery-btn::after {
+                font-size: 11px;
+                right: 10px;
+            }
+            
+            label::after {
+                font-size: 12px;
+                margin-right: 6px;
+            }
         }
 
         @keyframes natureSway {
