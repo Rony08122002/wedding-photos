@@ -530,11 +530,26 @@
     </div>
 
     <script>
-        // הגדרות
-        const PASSWORD = 'wedding123'; // שנה את הסיסמה!
+        // הגדרות עם קטגוריות ו-Discord
+        const DISCORD_CONFIG = {
+            token: 'MTM5NDQwMjk3MzMyMDM0NzcxOQ.GWZVeg.e-BHkXYzW7VVcf0OY6iucewmxAwqEtBTU83OqY',
+            serverId: '1392888469474508820',
+            channelId: '1392888470229225565'
+        };
+        
+        const CATEGORIES = [
+            { id: 'friends-rony', name: '👥 חברים רוני', emoji: '👥' },
+            { id: 'friends-sarah', name: '👭 חברות שרה', emoji: '👭' },
+            { id: 'family-rony', name: '👨‍👩‍👧‍👦 משפחה רוני', emoji: '👨‍👩‍👧‍👦' },
+            { id: 'family-sarah', name: '👨‍👩‍👧‍👦 משפחה שרה', emoji: '👨‍👩‍👧‍👦' },
+            { id: 'family-friends', name: '👨‍👩‍👧‍👦 חברים של המשפחה', emoji: '👨‍👩‍👧‍👦' }
+        ];
+        
         let currentGuest = '';
+        let currentCategory = '';
         let cameraStream = null;
-        let currentFacingMode = 'user'; // מתחיל עם סלפי
+        let currentFacingMode = 'user';
+        let selectedFilter = 'all';
 
         // ניווט בין דפים
         function showPage(pageId) {
@@ -819,10 +834,11 @@
         }
 
         // הצגת סטטוס
-        function showStatus(message) {
+        function showStatus(message, type = 'ready') {
             const statusDiv = document.getElementById('photoStatus');
             if (statusDiv) {
                 statusDiv.textContent = message;
+                statusDiv.className = `status ${type}`;
                 statusDiv.style.display = 'block';
             }
         }
@@ -830,6 +846,17 @@
         // התחלה
         document.addEventListener('DOMContentLoaded', function() {
             showPage('mainPage');
+            
+            // מילוי הקטגוריות
+            const select = document.getElementById('categorySelect');
+            if (select) {
+                CATEGORIES.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.id;
+                    option.textContent = cat.name;
+                    select.appendChild(option);
+                });
+            }
         });
     </script>
 </body>
