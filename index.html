@@ -530,11 +530,12 @@
     </div>
 
     <script>
-        // הגדרות עם קטגוריות ו-Discord
-        const DISCORD_CONFIG = {
-            token: 'MTM5NDQwMjk3MzMyMDM0NzcxOQ.GWZVeg.e-BHkXYzW7VVcf0OY6iucewmxAwqEtBTU83OqY',
-            serverId: '1392888469474508820',
-            channelId: '1392888470229225565'
+        // הגדרות עם Google Drive
+        const GOOGLE_DRIVE_CONFIG = {
+            clientId: '967885226703-ol8ovgfju4fo60ep51cr3ag1upnj885n.apps.googleusercontent.com',
+            clientSecret: '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',
+            redirectUri: 'http://localhost:8080',
+            scope: 'https://www.googleapis.com/auth/drive.file'
         };
         
         const CATEGORIES = [
@@ -550,6 +551,7 @@
         let cameraStream = null;
         let currentFacingMode = 'user';
         let selectedFilter = 'all';
+        let accessToken = null;
 
         // ניווט בין דפים
         function showPage(pageId) {
