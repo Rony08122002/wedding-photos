@@ -697,7 +697,7 @@
                 timeDisplay: new Date().toLocaleString('he-IL')
             };
 
-            await uploadToDrive(photoData);
+            await saveToDrive(photoData);
             updateCounter();
             
             const remaining = 15 - (myPhotos.length + 1);
@@ -761,7 +761,7 @@
             const localPhotos = JSON.parse(localStorage.getItem('wedding-photos-by-category') || '{}');
             
             // טעינת תמונות מ-Drive
-            const drivePhotos = await loadFromDrive();
+            const drivePhotos = await loadFromDriveSimple();
             
             // שילוב התמונות
             const combinedPhotos = { ...localPhotos };
@@ -942,12 +942,7 @@
         // אתחול כאשר הדף נטען
         document.addEventListener('DOMContentLoaded', function() {
             showPage('mainPage');
-            
-            // טעינת Google API
-            const script = document.createElement('script');
-            script.src = 'https://apis.google.com/js/api.js';
-            script.onload = initializeGapi;
-            document.head.appendChild(script);
+            initializeSimple();
         });
     </script>
 </body>
