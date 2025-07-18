@@ -315,7 +315,16 @@
         </div>
     </div>
 
+    <script src="https://apis.google.com/js/api.js"></script>
     <script>
+        // הגדרות Google Drive
+        const GOOGLE_CONFIG = {
+            apiKey: 'AIzaSyCbPCu1K4my1LTHpsUq1B0-Qjz9BrA_atU',
+            clientId: '967885226703-ol8ovgfju4fo60ep51cr3ag1upnj885n.apps.googleusercontent.com',
+            discoveryDoc: 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest',
+            scope: 'https://www.googleapis.com/auth/drive.file'
+        };
+
         // הגדרות עם קטגוריות
         const CATEGORIES = [
             { id: 'friends-rony', name: '👥 חברים רוני', emoji: '👥' },
@@ -330,6 +339,219 @@
         let cameraStream = null;
         let currentFacingMode = 'user';
         let selectedFilter = 'all';
+        let isSignedIn = false;
+        let weddingFolderId = null;
+
+        // אתחול Google API
+        async function initializeGoogleAPI() {
+            try {
+                await new Promise((resolve) => {
+                    gapi.load('auth2:client', resolve);
+                });
+
+                await gapi.client.init({
+                    apiKey: GOOGLE_CONFIG.apiKey,
+                    clientId: GOOGLE_CONFIG.clientId,
+                    discoveryDocs: [GOOGLE_CONFIG.discoveryDoc],
+                    scope: GOOGLE_CONFIG.scope
+                });
+
+                const authInstance = gapi.auth2.getAuthInstance();
+                isSignedIn = authInstance.isSignedIn.get();
+
+                console.log('Google API מוכן!');
+                showStatus('✅ מחובר ל-Google Drive!');
+                
+                if (!isSignedIn) {
+                    await authInstance.signIn();
+                    isSignedIn = true;
+                }
+
+                await createWeddingFolder();
+                
+            } catch (error) {
+                console.error('שגיאה באתחול Google API:', error);
+                showStatus('⚠️ בעיה בחיבור ל-Google Drive. נשתמש בשמירה מקומית.');
+            }
+        }
+
+        // יצירת תיקיית חתונה ראשית
+        async function createWeddingFolder() {
+            try {
+                const response = await gapi.client.drive.files.list({
+                    q: "name='Wedding Photos 2025' and mimeType='application/vnd.google-apps.folder'",
+                    fields: 'files(id, name)'
+                });
+
+                if (response.result.files.length > 0) {
+                    weddingFolderId = response.result.files[0].id;
+                    console.log('נמצאה תיקיית חתונה קיימת:', weddingFolderId);
+                } else {
+                    const folderResponse = await gapi.client.drive.files.create({
+                        resource: {
+                            name: 'Wedding Photos 2025',
+                            mimeType: 'application/vnd.google-apps.folder'
+                        }
+                    });
+                    weddingFolderId = folderResponse.result.id;
+                    console.log('נוצרה תיקיית חתונה חדשה:', weddingFolderId);
+                }
+
+                showStatus('✅ Google Drive מוכן לעבודה!');
+            } catch (error) {
+                console.error('שגיאה ביצירת תיקיה:', error);
+            }
+        }
+
+        // העלאה ל-Google Drive
+        async function uploadToGoogleDrive(photoData) {
+            if (!isSignedIn || !weddingFolderId) {
+                saveLocally(photoData);
+                showStatus('📱 תמונה נשמרה מקומית (לא מחובר ל-Drive)');
+                return false;
+            }
+
+            try {
+                showStatus('📤 מעלה ל-Google Drive...');
+
+                const base64Data = photoData.data.split(',')[1];
+                const byteCharacters = atob(base64Data);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], { type: 'image/jpeg' });
+
+                const categoryFolderId = await createCategoryFolder(photoData.category);
+                const fileName = `${photoData.guest}_${Date.now()}.jpg`;
+                
+                const metadata = {
+                    name: fileName,
+                    parents: [categoryFolderId],
+                    description: `תמונה של ${photoData.guest} מקטגוריה ${photoData.categoryName}`
+                };
+
+                const form = new FormData();
+                form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+                form.append('file', blob);
+
+                const authInstance = gapi.auth2.getAuthInstance();
+                const uploadResponse = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authInstance.currentUser.get().getAuthResponse().access_token}`
+                    },
+                    body: form
+                });
+
+                if (uploadResponse.ok) {
+                    const result = await uploadResponse.json();
+                    console.log('הועלה ל-Drive:', result.id);
+                    
+                    saveLocally(photoData);
+                    
+                    showStatus('✅ תמונה הועלתה ל-Google Drive בהצלחה!');
+                    return true;
+                } else {
+                    throw new Error('כשל בהעלאה');
+                }
+
+            } catch (error) {
+                console.error('שגיאה בהעלאה ל-Drive:', error);
+                saveLocally(photoData);
+                showStatus('⚠️ שגיאה בהעלאה ל-Drive. נשמר מקומית.');
+                return false;
+            }
+        }
+
+        // יצירת תיקיית קטגוריה
+        async function createCategoryFolder(categoryId) {
+            try {
+                const categoryName = CATEGORIES.find(c => c.id === categoryId)?.name || categoryId;
+                
+                const response = await gapi.client.drive.files.list({
+                    q: `name='${categoryName}' and mimeType='application/vnd.google-apps.folder' and '${weddingFolderId}' in parents`,
+                    fields: 'files(id, name)'
+                });
+
+                if (response.result.files.length > 0) {
+                    return response.result.files[0].id;
+                } else {
+                    const folderResponse = await gapi.client.drive.files.create({
+                        resource: {
+                            name: categoryName,
+                            mimeType: 'application/vnd.google-apps.folder',
+                            parents: [weddingFolderId]
+                        }
+                    });
+                    return folderResponse.result.id;
+                }
+            } catch (error) {
+                console.error('שגיאה ביצירת תיקיית קטגוריה:', error);
+                return weddingFolderId;
+            }
+        }
+
+        // שמירה מקומית (גיבוי)
+        function saveLocally(photoData) {
+            let allPhotos = JSON.parse(localStorage.getItem('wedding-photos-by-category') || '{}');
+            if (!allPhotos[photoData.category]) {
+                allPhotos[photoData.category] = {};
+            }
+            if (!allPhotos[photoData.category][photoData.guest]) {
+                allPhotos[photoData.category][photoData.guest] = [];
+            }
+            allPhotos[photoData.category][photoData.guest].push(photoData);
+            localStorage.setItem('wedding-photos-by-category', JSON.stringify(allPhotos));
+        }
+
+        // קריאת תמונות מ-Google Drive
+        async function loadPhotosFromDrive() {
+            if (!isSignedIn || !weddingFolderId) {
+                return [];
+            }
+
+            try {
+                const drivePhotos = [];
+                
+                for (const category of CATEGORIES) {
+                    const categoryFolderId = await createCategoryFolder(category.id);
+                    
+                    const response = await gapi.client.drive.files.list({
+                        q: `'${categoryFolderId}' in parents and mimeType contains 'image/'`,
+                        fields: 'files(id, name, description, createdTime, webContentLink, webViewLink)'
+                    });
+
+                    for (const file of response.result.files) {
+                        let guestName = 'אורח';
+                        if (file.description) {
+                            const match = file.description.match(/תמונה של (.+?) מקטגוריה/);
+                            if (match) guestName = match[1];
+                        } else {
+                            const nameMatch = file.name.match(/(.+?)_\d+\.jpg/);
+                            if (nameMatch) guestName = nameMatch[1];
+                        }
+
+                        drivePhotos.push({
+                            id: file.id,
+                            data: `https://drive.google.com/uc?id=${file.id}`,
+                            timestamp: file.createdTime,
+                            guest: guestName,
+                            category: category.id,
+                            categoryName: category.name,
+                            timeDisplay: new Date(file.createdTime).toLocaleString('he-IL'),
+                            source: 'drive'
+                        });
+                    }
+                }
+
+                return drivePhotos;
+            } catch (error) {
+                console.error('שגיאה בקריאה מ-Drive:', error);
+                return [];
+            }
+        }
 
         // פונקציות ניווט
         function showPage(pageId) {
@@ -427,8 +649,8 @@
             }
         }
 
-        // צילום תמונה עם קטגוריה
-        function capturePhoto() {
+        // צילום תמונה עם העלאה ל-Drive
+        async function capturePhoto() {
             if (!currentGuest || !currentCategory) {
                 alert('שגיאה: אין שם אורח או קטגוריה');
                 return;
@@ -474,14 +696,14 @@
                 timeDisplay: new Date().toLocaleString('he-IL')
             };
 
-            allPhotos[currentCategory][currentGuest].push(photoData);
-            localStorage.setItem('wedding-photos-by-category', JSON.stringify(allPhotos));
+            // העלאה ל-Google Drive
+            await uploadToGoogleDrive(photoData);
 
             updateCounter();
             
-            const remaining = 15 - allPhotos[currentCategory][currentGuest].length;
+            const remaining = 15 - (myPhotos.length + 1);
             if (remaining > 0) {
-                showStatus(`✅ תמונה נשמרה בהצלחה! נותרו ${remaining} תמונות`);
+                showStatus(`✅ תמונה נשמרה! נותרו ${remaining} תמונות`);
             } else {
                 showStatus('🎉 צילמת את כל התמונות! תודה רבה');
             }
@@ -529,17 +751,38 @@
             });
         }
 
-        // טעינת הגלריה הציבורית
-        function loadPublicGallery() {
-            const allPhotos = JSON.parse(localStorage.getItem('wedding-photos-by-category') || '{}');
+        // טעינת גלריה משולבת (מקומי + Drive)
+        async function loadPublicGallery() {
             const galleryContent = document.getElementById('publicGalleryContent');
+            
+            showStatus('📥 טוען תמונות מ-Google Drive...');
+            
+            // טעינת תמונות מקומיות
+            const localPhotos = JSON.parse(localStorage.getItem('wedding-photos-by-category') || '{}');
+            
+            // טעינת תמונות מ-Drive
+            const drivePhotos = await loadPhotosFromDrive();
+            
+            // שילוב התמונות
+            const combinedPhotos = { ...localPhotos };
+            
+            // הוספת תמונות Drive לקטגוריות המתאימות
+            drivePhotos.forEach(photo => {
+                if (!combinedPhotos[photo.category]) {
+                    combinedPhotos[photo.category] = {};
+                }
+                if (!combinedPhotos[photo.category][photo.guest]) {
+                    combinedPhotos[photo.category][photo.guest] = [];
+                }
+                combinedPhotos[photo.category][photo.guest].push(photo);
+            });
 
-            if (Object.keys(allPhotos).length === 0) {
+            if (Object.keys(combinedPhotos).length === 0 && drivePhotos.length === 0) {
                 galleryContent.innerHTML = `
                     <div style="text-align: center; padding: 40px; background: rgba(247, 241, 227, 0.6); border-radius: 20px;">
                         <h3 style="color: #5d5341; margin-bottom: 15px;">🎉 ברוכים הבאים לגלריית החתונה!</h3>
                         <p style="color: #5d5341; font-size: 16px;">אין תמונות עדיין. התמונות יופיעו כאן אחרי שהאורחים יתחילו לצלם.</p>
-                        <p style="color: #5d5341; font-size: 14px; margin-top: 15px;">📱 כרגע: גלריה מקומית (לכל מכשיר בנפרד)</p>
+                        <p style="color: #5d5341; font-size: 14px; margin-top: 15px;">☁️ מחובר ל-Google Drive לגלריה משותפת!</p>
                     </div>
                 `;
                 return;
@@ -548,9 +791,9 @@
             let totalPhotos = 0;
             let totalGuests = 0;
 
-            Object.keys(allPhotos).forEach(categoryId => {
-                Object.keys(allPhotos[categoryId]).forEach(guestName => {
-                    const guestPhotos = allPhotos[categoryId][guestName] || [];
+            Object.keys(combinedPhotos).forEach(categoryId => {
+                Object.keys(combinedPhotos[categoryId]).forEach(guestName => {
+                    const guestPhotos = combinedPhotos[categoryId][guestName] || [];
                     totalPhotos += guestPhotos.length;
                     if (guestPhotos.length > 0) totalGuests++;
                 });
@@ -569,21 +812,23 @@
             summary.style.fontSize = '18px';
             
             const lastUpdateTime = new Date().toLocaleString('he-IL');
+            const driveCount = drivePhotos.length;
+            const localCount = totalPhotos - driveCount;
             
             summary.innerHTML = `
-                📊 <strong>גלריית החתונה</strong><br>
+                📊 <strong>גלריית החתונה המשותפת</strong><br>
                 <div style="margin: 10px 0; font-size: 24px;">
                     🎉 ${totalPhotos} תמונות מ-${totalGuests} אורחים 🎉
                 </div>
                 <div style="font-size: 14px; color: #5d5341; margin-top: 10px;">
-                    📱 מהמכשיר הזה: ${totalPhotos} תמונות<br>
+                    ☁️ מ-Google Drive: ${driveCount} תמונות | 📱 מקומיות: ${localCount} תמונות<br>
                     עודכן: ${lastUpdateTime}
                 </div>
             `;
             galleryContent.appendChild(summary);
 
             CATEGORIES.forEach(category => {
-                const categoryPhotos = allPhotos[category.id];
+                const categoryPhotos = combinedPhotos[category.id];
                 if (!categoryPhotos || Object.keys(categoryPhotos).length === 0) return;
 
                 const categorySection = document.createElement('div');
@@ -621,13 +866,27 @@
                         photoDiv.className = 'photo-item';
                         
                         const timestamp = new Date(photo.timestamp).toLocaleString('he-IL');
+                        const sourceIcon = photo.source === 'drive' ? '☁️' : '📱';
                         
                         photoDiv.innerHTML = `
                             <img src="${photo.data}" alt="תמונה של ${guestName}" loading="lazy" style="width: 100%; height: 150px; object-fit: cover;">
                             <div style="position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.7); color: white; padding: 3px 8px; border-radius: 8px; font-size: 11px;">
-                                📱 ${index + 1}/${guestPhotos.length}
+                                ${sourceIcon} ${index + 1}/${guestPhotos.length}
                             </div>
                             <div style="position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; padding: 3px 8px; border-radius: 8px; font-size: 10px;">
+                                ${timestamp.split(' ')[1]}
+                            </div>
+                        `;
+                        grid.appendChild(photoDiv);
+                    });
+                    
+                    guestDiv.appendChild(grid);
+                    categorySection.appendChild(guestDiv);
+                });
+                
+                galleryContent.appendChild(categorySection);
+            });
+        } 8px; font-size: 10px;">
                                 ${timestamp.split(' ')[1]}
                             </div>
                         `;
@@ -706,6 +965,12 @@
         // התחלה
         document.addEventListener('DOMContentLoaded', function() {
             showPage('mainPage');
+            
+            // אתחול Google API
+            initializeGoogleAPI().catch(error => {
+                console.error('כשל באתחול Google API:', error);
+                showStatus('📱 מצב מקומי - תמונות יישמרו במכשיר זה בלבד');
+            });
         });
     </script>
 </body>
