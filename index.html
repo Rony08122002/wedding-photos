@@ -1,4 +1,12 @@
-<!DOCTYPE html>
+.names-english {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #5a7c65;
+            margin: 0.5rem 0 1rem;
+            text-align: center;
+            direction: ltr;
+        }<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -60,16 +68,20 @@
             background-image: url('element gauche');
         }
 
-        .corner-decoration.bottom-right {
-            bottom: 20px;
-            right: 20px;
+        .corner-decoration.top-right-2 {
+            top: 180px;
+            right: 50px;
             background-image: url('element droite bas');
+            width: 150px;
+            height: 150px;
         }
 
-        .corner-decoration.bottom-left {
-            bottom: 20px;
-            left: 20px;
+        .corner-decoration.top-left-2 {
+            top: 180px;
+            left: 50px;
             background-image: url('element gauche bas');
+            width: 150px;
+            height: 150px;
         }
 
         .container {
@@ -80,10 +92,10 @@
             z-index: 1;
         }
 
-        /* כותרת עם עוגת חתונה */
+        /* כותרת פשוטה */
         header {
             background: rgba(255, 255, 255, 0.95);
-            padding: 3rem 2rem;
+            padding: 2rem;
             border-radius: 30px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
@@ -123,37 +135,17 @@
             font-size: 2.5rem;
             font-weight: 600;
             color: #5a7c65;
-            margin: 1rem 0;
+            margin: 1rem 0 0.5rem;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
             letter-spacing: 1px;
-        }
-
-        .names-english {
-            font-family: 'Dancing Script', cursive;
-            font-size: 3rem;
-            font-weight: 700;
-            color: #5a7c65;
-            margin: 1rem 0;
-            text-align: center;
-            direction: ltr;
         }
 
         header p {
             font-size: 1.2rem;
             color: #8b7355;
-            margin: 0.5rem 0;
+            margin: 0.5rem 0 1rem;
             font-weight: 400;
             line-height: 1.6;
-        }
-
-        .date-info {
-            background: rgba(245, 240, 235, 0.9);
-            padding: 1rem;
-            border-radius: 15px;
-            margin: 1rem 0;
-            border: 2px solid #d4af8c;
-            font-weight: 500;
-            color: #5a7c65;
         }
 
         /* כרטיסי תוכן */
@@ -378,13 +370,20 @@
                 top: 10px;
             }
             
+            .corner-decoration.top-right-2,
+            .corner-decoration.top-left-2 {
+                top: 140px;
+                width: 100px;
+                height: 100px;
+            }
+            
             .corner-decoration.top-right,
-            .corner-decoration.bottom-right {
+            .corner-decoration.top-right-2 {
                 right: 10px;
             }
             
             .corner-decoration.top-left,
-            .corner-decoration.bottom-left {
+            .corner-decoration.top-left-2 {
                 left: 10px;
             }
 
@@ -411,7 +410,7 @@
             }
             
             .names-english {
-                font-size: 2.2rem;
+                font-size: 2rem;
             }
             
             .btn {
@@ -488,31 +487,21 @@
     </style>
 </head>
 <body>
-    <!-- עיטורי פינות -->
+    <!-- עיטורי פינות - כולם מעלה -->
     <div class="corner-decoration top-right"></div>
     <div class="corner-decoration top-left"></div>
-    <div class="corner-decoration bottom-right"></div>
-    <div class="corner-decoration bottom-left"></div>
+    <div class="corner-decoration top-right-2"></div>
+    <div class="corner-decoration top-left-2"></div>
 
     <div class="container">
-        <!-- כותרת עם עוגת חתונה ושלט -->
+        <!-- כותרת פשוטה ונקייה -->
         <header>
             <div class="wedding-cake"></div>
-            <div class="wedding-sign"></div>
             
-            <h1>בשבח ותודיה אנו שמחים</h1>
-            <p>ונרגשים להזמינכם לחגוג עימנו את היום המאושר בחיינו</p>
+            <h1>צלמו, שתפו, וזכרו</h1>
+            <p>תמונות מהחתונה של שרה ורוני 💍</p>
             
             <div class="names-english">Sarah & Rony</div>
-            
-            <div class="date-info">
-                שתתקיים אי"ה יום ראשון, ז' אלול תשפ"ה<br>
-                <strong>31.08.2025</strong><br>
-                קבלת פנים 18:00 | חופה 18:00
-            </div>
-            
-            <p>בגני הצבי מושב ברכיה</p>
-            <p><strong>נשמח לראותכם</strong></p>
         </header>
 
         <!-- דף ראשי -->
@@ -630,8 +619,8 @@
 
         <!-- ברכת סיום -->
         <div class="footer-blessing">
-            🌸 <strong> החתן והכלה</strong> 🌸<br>
-            משפחת זאווי | משפחת זרדון<br>
+            🌸 <strong>דורי החתן והכלה</strong> 🌸<br>
+            משפחת זרדון | משפחת אזויי<br>
             <em>נשמח לראותכם</em>
         </div>
     </div>
