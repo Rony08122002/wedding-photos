@@ -1,8 +1,8 @@
-/* style.css */
+/* wedding.css */
 
 body {
   font-family: 'Noto Sans Hebrew', 'Segoe UI', sans-serif;
-  background: #fdfcfb url('background-texture.jpg') no-repeat center center fixed;
+  background: #fdfcfb url('fond (1).png') no-repeat center center fixed;
   background-size: cover;
   margin: 0;
   padding: 0;
@@ -98,37 +98,15 @@ body::before, body::after {
 body::before {
   top: 0;
   left: 0;
-  background-image: url('top-left-flower.png');
+  background-image: url('element gauche (1).png');
 }
 
 body::after {
   top: 0;
   right: 0;
-  background-image: url('top-right-flower.png');
+  background-image: url('element droite (1).png');
 }
 
 footer::before {
   content: "";
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 160px;
-  height: 160px;
-  background-image: url('bottom-left-flower.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  z-index: -1;
-}
-
-footer::after {
-  content: "";
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  width: 160px;
-  height: 160px;
-  background-image: url('bottom-right-flower.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  z-index: -1;
-}
+  posit
