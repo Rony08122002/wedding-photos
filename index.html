@@ -1,12 +1,4 @@
-.names-english {
-            font-family: 'Dancing Script', cursive;
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #5a7c65;
-            margin: 0.5rem 0 1rem;
-            text-align: center;
-            direction: ltr;
-        }<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -123,7 +115,7 @@
             width: 120px;
             height: 120px;
             margin: 0 auto 1.5rem;
-            background-image: url('element milieu');
+            background-image: url('element milieu.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
@@ -159,6 +151,17 @@
             margin: 0.5rem 0 1rem;
             font-weight: 400;
             line-height: 1.6;
+        }
+
+        /* שמות באנגלית */
+        .names-english {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #5a7c65;
+            margin: 0.5rem 0 1rem;
+            text-align: center;
+            direction: ltr;
         }
 
         /* כרטיסי תוכן */
@@ -635,15 +638,15 @@
 
         <!-- ברכת סיום -->
         <div class="footer-blessing">
-            🌸 <strong>דורי החתן והכלה</strong> 🌸<br>
-            משפחת זרדון | משפחת אזויי<br>
+            🌸 <strong>לכבוד החתן והכלה</strong> 🌸<br>
+            משפחת זרדון | משפחת זאווי<br>
             <em>נשמח לראותכם</em>
         </div>
     </div>
 
     <script src="https://apis.google.com/js/api.js"></script>
     <script>
-        // כל הקוד JavaScript נשאר זהה
+        // קונפיגורציית Google API
         const API_KEY = 'AIzaSyCbPCu1K4my1LTHpsUq1B0-Qjz9BrA_atU';
         const CLIENT_ID = '967885226703-ol8ovgfju4fo60ep51cr3ag1upnj885n.apps.googleusercontent.com';
         const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
@@ -1226,6 +1229,7 @@
             }
         }
 
+        // אתחול האתר
         document.addEventListener('DOMContentLoaded', function() {
             showPage('mainPage');
             
@@ -1242,3 +1246,6 @@
                 }, 3000);
             }
         });
+    </script>
+</body>
+</html>
