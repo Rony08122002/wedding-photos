@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>תמונות מהחתונה של שרה ורוני</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background-image: url('background-texture.jpg');
+      background-size: cover;
+      background-attachment: fixed;
+    }
+    header img.logo {
+      max-width: 120px;
+      margin-bottom: 1rem;
+    }
+    .wedding-sign {
+      max-width: 300px;
+      margin: 0 auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="sr-logo.png" alt="לוגו שרה ורוני" class="logo" />
+    <img src="sign.png" alt="שלט חתונה" class="wedding-sign" />
+    <h1>צלמו, שתפו, וזכרו – רגעים מהחתונה של שרה ורוני 💍</h1>
+    <p>צלמו תמונות והעלו אותן לגלריה המשותפת – שתישאר למזכרת 🎉</p>
+  </header>
+
+  <main>
+    <section class="camera-section">
+      <video id="video" autoplay playsinline></video>
+      <button id="capture">📸 צלם תמונה</button>
+      <canvas id="canvas" style="display: none;"></canvas>
+      <button id="upload" disabled>⬆️ העלה לתמונות האירוע</button>
+    </section>
+
+    <section class="gallery-section">
+      <h2>🎞 הגלריה שלנו</h2>
+      <div id="gallery"></div>
+    </section>
+  </main>
+
+  <script src="https://apis.google.com/js/api.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
