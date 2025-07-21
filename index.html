@@ -37,41 +37,45 @@
             z-index: -1;
         }
 
-        /* עיטורים בפינות - מעל הרקע */
+        /* עיטורים בפינות - מעל הכל */
         .corner-decoration {
-            position: fixed;
+            position: fixed !important;
             width: 250px;
             height: 250px;
             background-size: contain;
             background-repeat: no-repeat;
-            z-index: 9999;
-            opacity: 1;
-            pointer-events: none;
+            z-index: 99999 !important;
+            opacity: 1 !important;
+            pointer-events: none !important;
+            top: auto;
+            left: auto;
+            right: auto;
+            bottom: auto;
         }
 
         .corner-decoration.top-right {
-            top: 20px;
-            right: 20px;
+            top: 20px !important;
+            right: 20px !important;
             background-image: url('element droite');
         }
 
         .corner-decoration.top-left {
-            top: 20px;
-            left: 20px;
+            top: 20px !important;
+            left: 20px !important;
             background-image: url('element gauche');
         }
 
         .corner-decoration.bottom-right {
-            bottom: 20px;
-            right: 30px;
+            bottom: 20px !important;
+            right: 30px !important;
             background-image: url('element droite bas');
             width: 200px;
             height: 200px;
         }
 
         .corner-decoration.bottom-left {
-            bottom: 20px;
-            left: 30px;
+            bottom: 20px !important;
+            left: 30px !important;
             background-image: url('element gauche bas');
             width: 200px;
             height: 200px;
@@ -386,24 +390,24 @@
             
             .corner-decoration.top-right,
             .corner-decoration.top-left {
-                top: 10px;
+                top: 10px !important;
             }
             
             .corner-decoration.bottom-right,
             .corner-decoration.bottom-left {
-                bottom: 10px;
+                bottom: 10px !important;
                 width: 140px;
                 height: 140px;
             }
             
             .corner-decoration.top-right,
             .corner-decoration.bottom-right {
-                right: 5px;
+                right: 5px !important;
             }
             
             .corner-decoration.top-left,
             .corner-decoration.bottom-left {
-                left: 5px;
+                left: 5px !important;
             }
 
             .container {
