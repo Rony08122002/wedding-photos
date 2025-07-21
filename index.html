@@ -37,15 +37,16 @@
             z-index: -1;
         }
 
-        /* עיטורים בפינות - יותר גדולים ונראים */
+        /* עיטורים בפינות - מעל הרקע */
         .corner-decoration {
             position: fixed;
             width: 250px;
             height: 250px;
             background-size: contain;
             background-repeat: no-repeat;
-            z-index: 0;
+            z-index: 3;
             opacity: 1;
+            pointer-events: none;
         }
 
         .corner-decoration.top-right {
@@ -60,16 +61,16 @@
             background-image: url('element gauche');
         }
 
-        .corner-decoration.top-right-2 {
-            top: 200px;
+        .corner-decoration.bottom-right {
+            bottom: 20px;
             right: 30px;
             background-image: url('element droite bas');
             width: 200px;
             height: 200px;
         }
 
-        .corner-decoration.top-left-2 {
-            top: 200px;
+        .corner-decoration.bottom-left {
+            bottom: 20px;
             left: 30px;
             background-image: url('element gauche bas');
             width: 200px;
@@ -388,20 +389,20 @@
                 top: 10px;
             }
             
-            .corner-decoration.top-right-2,
-            .corner-decoration.top-left-2 {
-                top: 160px;
+            .corner-decoration.bottom-right,
+            .corner-decoration.bottom-left {
+                bottom: 10px;
                 width: 140px;
                 height: 140px;
             }
             
             .corner-decoration.top-right,
-            .corner-decoration.top-right-2 {
+            .corner-decoration.bottom-right {
                 right: 5px;
             }
             
             .corner-decoration.top-left,
-            .corner-decoration.top-left-2 {
+            .corner-decoration.bottom-left {
                 left: 5px;
             }
 
@@ -505,11 +506,11 @@
     </style>
 </head>
 <body>
-    <!-- עיטורי פינות - כולם מעלה -->
+    <!-- עיטורי פינות - מעל הרקע -->
     <div class="corner-decoration top-right"></div>
     <div class="corner-decoration top-left"></div>
-    <div class="corner-decoration top-right-2"></div>
-    <div class="corner-decoration top-left-2"></div>
+    <div class="corner-decoration bottom-right"></div>
+    <div class="corner-decoration bottom-left"></div>
 
     <div class="container">
         <!-- כותרת עם לוגו ועוגת חתונה -->
