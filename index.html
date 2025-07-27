@@ -519,7 +519,7 @@
             <div class="content-card">
                 <h2>🎉 ברוכים הבאים לגלריית החתונה!</h2>
                 <p style="font-size: 1.1rem; line-height: 1.6; margin: 1.5rem 0;">
-                    כדי להתחיל לצלם ולראות את תמונות כל האורחים, אנא הכנסו את כתובת המייל שלכם:
+                    כדי להתחיל לצלם ולראות את תמונות כל האורחים, אנא מלאו את הפרטים:
                 </p>
 
                 <div class="form-group">
@@ -666,13 +666,8 @@
     </div>
 
     <script>
-        // רשימת מיילים מאושרים (תוסיף כאן את רשימת המוזמנים)
-        const APPROVED_EMAILS = [
-            'rony212002@gmail.com',
-            'example@gmail.com',
-            'test@test.com',
-            // הוסף כאן את כל המיילים של המוזמנים לחתונה
-        ];
+        // כל המיילים מאושרים! (בלי הגבלות)
+        const APPROVED_EMAILS = "ALL"; // מצב מיוחד - כל מייל מאושר
 
         const CATEGORIES = [
             { id: 'friends-rony', name: '👥 חברים רוני', emoji: '👥' },
@@ -698,6 +693,13 @@
                 return;
             }
 
+            // בדיקה בסיסית של פורמט מייל
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showMessage('loginMessage', 'אנא הכנס כתובת מייל תקינה', 'error');
+                return;
+            }
+
             if (!name) {
                 showMessage('loginMessage', 'אנא הכנס שם מלא', 'error');
                 return;
@@ -708,11 +710,8 @@
                 return;
             }
 
-            // בדיקה אם המייל מאושר
-            if (!APPROVED_EMAILS.includes(email)) {
-                showMessage('loginMessage', 'המייל לא נמצא ברשימת המוזמנים. אנא פנה לבעלי השמחה.', 'error');
-                return;
-            }
+            // כל מייל מאושר! 🎉
+            showMessage('loginMessage', 'ברוך הבא! נכנסת בהצלחה 🎉', 'success');
 
             // התחברות מוצלחת
             currentUser = {
@@ -724,8 +723,6 @@
 
             // שמירה ב-localStorage
             localStorage.setItem('wedding-user', JSON.stringify(currentUser));
-
-            showMessage('loginMessage', 'נכנסת בהצלחה! מעביר אותך...', 'success');
             
             setTimeout(() => {
                 showMainPage();
