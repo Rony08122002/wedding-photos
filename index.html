@@ -680,10 +680,15 @@
             try {
                 updateStatus('🔄 מתחבר ל-Google Drive...');
                 
+                // בדיקה אם gapi זמין
+                if (typeof gapi === 'undefined') {
+                    throw new Error('Google API לא נטען');
+                }
+
                 await new Promise((resolve, reject) => {
                     gapi.load('auth2:client', {
                         callback: resolve,
-                        onerror: reject
+                        onerror: () => reject(new Error('שגיאה בטעינת Google API'))
                     });
                 });
 
@@ -693,6 +698,20 @@
                     discoveryDocs: [DISCOVERY_DOC],
                     scope: SCOPES
                 });
+
+                // בדיקה אם ה-API מופעל
+                try {
+                    await gapi.client.drive.files.list({
+                        pageSize: 1,
+                        fields: 'files(id)'
+                    });
+                } catch (apiError) {
+                    console.error('API Test Error:', apiError);
+                    if (apiError.status === 403) {
+                        throw new Error('Google Drive API לא מופעל בפרויקט');
+                    }
+                    throw apiError;
+                }
 
                 const authInstance = gapi.auth2.getAuthInstance();
                 
@@ -705,12 +724,19 @@
                         try {
                             updateStatus('⏳ מתחבר...');
                             await authInstance.signIn({
-                                ux_mode: 'popup'
+                                ux_mode: 'popup',
+                                redirect_uri: window.location.origin
                             });
                             await setupDrive();
                         } catch (error) {
                             console.error('Sign in failed:', error);
-                            updateStatus('❌ התחברות נכשלה. נמשיך בשמירה מקומית.');
+                            if (error.error === 'popup_blocked_by_browser') {
+                                updateStatus('❌ הדפדפן חסם את החלון. אנא אפשר חלונות קופצים.');
+                            } else if (error.error === 'access_denied') {
+                                updateStatus('❌ הגישה נדחתה. נמשיך בשמירה מקומית.');
+                            } else {
+                                updateStatus('❌ התחברות נכשלה. נמשיך בשמירה מקומית.');
+                            }
                             driveReady = false;
                         }
                     };
@@ -718,7 +744,17 @@
 
             } catch (error) {
                 console.error('Google API Init Error:', error);
-                updateStatus('⚠️ בעיה בטעינת Google API. משתמש בשמירה מקומית.');
+                let errorMessage = '⚠️ ';
+                
+                if (error.message.includes('API לא מופעל')) {
+                    errorMessage += 'Google Drive API לא מופעל. פנה למפתח.';
+                } else if (error.message.includes('Google API לא נטען')) {
+                    errorMessage += 'לא ניתן לטעון Google API. בדוק חיבור אינטרנט.';
+                } else {
+                    errorMessage += 'בעיה בהתחברות ל-Google. משתמש בשמירה מקומית.';
+                }
+                
+                updateStatus(errorMessage);
                 driveReady = false;
             }
         }
@@ -1236,22 +1272,40 @@
             }
         }
 
-        // אתחול האתר
+        // אתחול האתר עם דיאגנוסטיקה מפורטת
         document.addEventListener('DOMContentLoaded', function() {
             showPage('mainPage');
             
-            if (typeof gapi !== 'undefined') {
-                initGoogleDrive();
-            } else {
-                setTimeout(() => {
-                    if (typeof gapi !== 'undefined') {
-                        initGoogleDrive();
-                    } else {
-                        updateStatus('⚠️ Google API לא זמין. עובד במצב מקומי בלבד.');
-                        driveReady = false;
-                    }
-                }, 3000);
-            }
+            // בדיקת זמינות Google API
+            const checkGoogleAPI = () => {
+                if (typeof gapi !== 'undefined') {
+                    console.log('✅ Google API נטען בהצלחה');
+                    initGoogleDrive();
+                } else {
+                    console.log('❌ Google API לא זמין');
+                    updateStatus('⚠️ Google API לא זמין. בדוק חיבור אינטרנט. עובד במצב מקומי.');
+                    driveReady = false;
+                }
+            };
+
+            // נסה מיד ואז שוב אחרי 3 שניות
+            checkGoogleAPI();
+            setTimeout(checkGoogleAPI, 3000);
+            
+            // הדפס מידע למפתח
+            console.log('🔧 מידע טכני לתיקון Google API:');
+            console.log('• API Key:', API_KEY ? 'קיים' : 'חסר');
+            console.log('• Client ID:', CLIENT_ID ? 'קיים' : 'חסר');
+            console.log('• דומיין נוכחי:', window.location.origin);
+            console.log('');
+            console.log('📋 צעדים לתיקון:');
+            console.log('1. לך ל: https://console.cloud.google.com/apis/credentials');
+            console.log('2. בחר פרויקט: Wedding Photos 2025');
+            console.log('3. ערוך OAuth Client ID');
+            console.log('4. הוסף ל-Authorized JavaScript origins:', window.location.origin);
+            console.log('5. הוסף ל-Authorized redirect URIs:', window.location.href);
+            console.log('6. ודא שהפעלת: Google Drive API + Google Picker API');
+            console.log('7. הגדר OAuth consent screen ופרסם את האפליקציה');
         });
     </script>
 </body>
