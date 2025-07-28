@@ -898,28 +898,43 @@
         }
 
         function savePhotoLocally(photoData) {
-            console.log('💾 שומר תמונה מקומית...', { firebaseReady });
+            console.log('💾 שומר תמונה...', { 
+                user: photoData.user, 
+                category: photoData.category,
+                firebaseStatus: firebaseReady ? 'זמין' : 'לא זמין'
+            });
             
-            // שמירה בFirebase (משותף בין כל המכשירים)
-            if (firebaseReady && typeof firebase !== 'undefined') {
-                savePhotoToFirebase(photoData);
-            } else {
-                console.log('⚠️ Firebase לא זמין - שומר רק מקומית');
+            // שמירה בFirebase רק אם זמין
+            if (firebaseReady && database) {
+                try {
+                    savePhotoToFirebase(photoData);
+                } catch (error) {
+                    console.log('⚠️ שגיאה ב-Firebase:', error);
+                }
             }
 
-            // גיבוי מקומי
-            let allPhotos = JSON.parse(localStorage.getItem('wedding-all-photos') || '[]');
-            allPhotos.push(photoData);
-            localStorage.setItem('wedding-all-photos', JSON.stringify(allPhotos));
+            // שמירה מקומית (תמיד עובד)
+            try {
+                let allPhotos = JSON.parse(localStorage.getItem('wedding-all-photos') || '[]');
+                allPhotos.push(photoData);
+                localStorage.setItem('wedding-all-photos', JSON.stringify(allPhotos));
 
-            let myPhotos = JSON.parse(localStorage.getItem(`wedding-photos-${currentUser.email}`) || '[]');
-            myPhotos.push(photoData);
-            localStorage.setItem(`wedding-photos-${currentUser.email}`, JSON.stringify(myPhotos));
-            
-            console.log('✅ תמונה נשמרה מקומית!');
+                let myPhotos = JSON.parse(localStorage.getItem(`wedding-photos-${currentUser.email}`) || '[]');
+                myPhotos.push(photoData);
+                localStorage.setItem(`wedding-photos-${currentUser.email}`, JSON.stringify(myPhotos));
+                
+                console.log('✅ תמונה נשמרה מקומית בהצלחה!');
+            } catch (error) {
+                console.error('❌ שגיאה בשמירה מקומית:', error);
+            }
         }
 
         async function savePhotoToFirebase(photoData) {
+            if (!firebaseReady || !database) {
+                console.log('⚠️ Firebase לא זמין');
+                return;
+            }
+            
             try {
                 console.log('🔥 שומר ל-Firebase...', {
                     user: photoData.user,
@@ -934,12 +949,8 @@
                 
                 console.log('✅ תמונה נשמרה ל-Firebase בהצלחה!', result.key);
                 
-                // עדכון הגלריה בזמן אמת
-                updatePhotoCount();
-                
             } catch (error) {
                 console.error('❌ שגיאה בשמירה ל-Firebase:', error);
-                console.log('🔄 נמשיך עם שמירה מקומית בלבד');
             }
         }
 
