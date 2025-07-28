@@ -306,6 +306,29 @@
             object-fit: cover;
         }
 
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(247, 241, 227, 0.3);
+            border-radius: 20px;
+        }
+
+        .guest-section {
+            margin: 30px 0;
+            padding: 30px;
+            background: rgba(247, 241, 227, 0.6);
+            border-radius: 20px;
+        }
+
+        .guest-section h3 {
+            color: #5d5341;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+        }
+
         /* כפתורי פילטר */
         .filter-buttons {
             display: flex;
@@ -462,6 +485,16 @@
                 font-size: 0.9rem;
                 padding: 0.8rem 1.4rem;
             }
+
+            .photos-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .photo-item img {
+                height: 120px;
+            }
         }
 
         /* חתימת רגל */
@@ -501,6 +534,17 @@
             text-align: center;
             font-weight: 600;
         }
+
+        .status {
+            padding: 15px;
+            border-radius: 15px;
+            margin: 1rem 0;
+            text-align: center;
+            margin: 20px 0;
+            font-weight: 600;
+            background: rgba(144, 183, 121, 0.2);
+            color: #2d4a1f;
+        }
     </style>
 </head>
 <body>
@@ -522,60 +566,25 @@
             <div class="names-english">Sarah & Rony</div>
         </header>
 
-        <!-- דף כניסה פשוט -->
-        <div id="loginPage">
+        <!-- דף ראשי -->
+        <div id="mainPage">
             <div class="content-card">
-                <h2>🎉 ברוכים הבאים לגלריית החתונה!</h2>
-                <p style="font-size: 1.1rem; line-height: 1.6; margin: 1.5rem 0;">
-                    כדי להתחיל לצלם ולראות את תמונות כל האורחים, אנא מלאו את הפרטים:
-                </p>
-
-                <div class="form-group">
-                    <label for="userName">שם מלא: 🌺</label>
-                    <input type="text" id="userName" placeholder="הכנס את שמך המלא">
+                <h2 style="text-align: center; margin-bottom: 2rem; color: #5a7c65;">🌿 חתונה מבורכת 🌸</h2>
+                
+                <div class="status">
+                    ✅ ברוכים הבאים! בחרו קטגוריה או צלמו תמונות יפות!
                 </div>
 
                 <div class="form-group">
-                    <label for="categorySelect">קטגוריה: 🌼</label>
-                    <select id="categorySelect">
-                        <option value="">בחר את הקבוצה שלך...</option>
-                        <option value="friends-rony">👥 חברים רוני</option>
-                        <option value="friends-sarah">👭 חברות שרה</option>
-                        <option value="family-rony">👨‍👩‍👧‍👦 משפחה רוני</option>
-                        <option value="family-sarah">👨‍👩‍👧‍👦 משפחה שרה</option>
-                        <option value="family-friends">👨‍👩‍👧‍👦 חברים של המשפחה</option>
-                    </select>
-                </div>
-
-                <div id="loginMessage"></div>
-
-                <button class="btn" onclick="loginUser()">🚪 כניסה לגלריה</button>
-                <button class="btn btn-gallery" onclick="showGalleryPreview()">👀 הצצה לגלריה</button>
-                <button class="btn btn-test" onclick="testCamera()">📸 בדיקת מצלמה (ישיר)</button>
-            </div>
-
-            <div class="center-decoration">🌸 ❦ 🌿 ❦ 🌸</div>
-        </div>
-
-        <!-- דף ראשי לאחר התחברות -->
-        <div id="mainPage" class="hidden">
-            <div class="status-card">
-                🎉 שלום <span id="welcomeName"></span>! 
-                <div style="margin-top: 0.5rem;">
-                    <span id="userCategoryDisplay"></span>
-                </div>
-            </div>
-            
-            <div class="content-card">
-                <div style="text-align: center; margin-bottom: 2rem;">
-                    <h2>מה תרצה לעשות?</h2>
+                    <label for="guestName">שם האורח: 🌺</label>
+                    <input type="text" id="guestName" placeholder="הכנס את שמך המלא">
                 </div>
 
                 <button class="btn" onclick="startCamera()">📸 התחל לצלם!</button>
-                <button class="btn" onclick="viewMyPhotos()">🖼️ התמונות שלי</button>
-                <button class="btn btn-gallery" onclick="showPublicGallery()">🎞 הגלריה של כולם</button>
-                <button class="btn btn-danger" onclick="logout()">🚪 יציאה</button>
+                <button class="btn btn-gallery" onclick="showGallery()">🖼️ גלריה משותפת של כולם</button>
             </div>
+
+            <div class="center-decoration">🌸 ❦ 🌿 ❦ 🌸</div>
         </div>
 
         <!-- דף מצלמה -->
@@ -583,23 +592,27 @@
             <div class="content-card camera-section">
                 <h2>📸 מצלמה</h2>
                 
-                <div id="photoStatus" class="status-card">מוכן לצילום!</div>
+                <div style="font-size: 20px; color: #5d5341; margin: 20px 0;">
+                    <span id="guestNameDisplay"></span> צולם תמונות
+                </div>
                 
-                <video id="video" autoplay playsinline></video>
+                <div id="photoStatus" class="status">מוכן לצילום!</div>
+                
+                <video id="video" autoplay playsinline muted></video>
                 <canvas id="canvas" style="display: none;"></canvas>
                 
-                <div>
-                    <button class="btn" onclick="capturePhoto()">📸 צלם תמונה</button>
+                <div style="margin: 15px 0;">
                     <button class="btn" onclick="flipCamera()">🔄 החלף מצלמה</button>
                 </div>
                 
-                <div class="status-card" style="background: rgba(90, 124, 101, 0.2); color: #5a7c65;">
-                    📊 צילמת <span id="photoCount">0</span> תמונות
+                <div class="status" style="background: rgba(144, 183, 121, 0.3);">
+                    📊 נותרו <span id="remainingPhotos">15</span> תמונות
                 </div>
                 
-                <div>
-                    <button class="btn" onclick="viewMyPhotos()">🖼️ התמונות שלי</button>
-                    <button class="btn btn-gallery" onclick="goHome()">🏠 חזור לבית</button>
+                <div style="margin-top: 20px;">
+                    <button class="btn" onclick="takePhoto()">📸 צלם תמונה</button>
+                    <button class="btn" onclick="showMyPhotos()">🖼️ התמונות שלי</button>
+                    <button class="btn btn-gallery" onclick="goHome()">🏠 סיימתי</button>
                 </div>
             </div>
         </div>
@@ -609,53 +622,47 @@
             <div class="content-card">
                 <h2>התמונות שלי</h2>
                 
-                <div id="myPhotosGrid" class="gallery-grid"></div>
+                <div id="myPhotosList" class="photos-grid"></div>
                 
                 <div>
-                    <button class="btn" onclick="goBackToCamera()">📸 חזור לצילום</button>
-                    <button class="btn btn-gallery" onclick="goHome()">🏠 חזור לבית</button>
+                    <button class="btn" onclick="goToCamera()">📸 צלם עוד</button>
+                    <button class="btn btn-gallery" onclick="goHome()">🏠 חזור הביתה</button>
                 </div>
             </div>
         </div>
 
-        <!-- גלריה ציבורית -->
-        <div id="publicGalleryPage" class="hidden">
+        <!-- כניסה לגלריה -->
+        <div id="galleryLoginPage" class="hidden">
             <div class="content-card">
-                <h1>🎞 הגלריה של כולם</h1>
+                <h2 style="text-align: center;">👑 גלריה פרטית</h2>
                 
-                <div class="status-card">
-                    📊 גלריה משותפת - כל התמונות של כל האורחים!
+                <div class="status">
+                    כניסה לחתן וכלה בלבד
                 </div>
-
-                <!-- כפתורי פילטר -->
-                <div class="filter-buttons">
-                    <button onclick="filterGallery('all')" id="filter-all" class="filter-btn active">
-                        🌟 כל הקטגוריות
-                    </button>
-                    <button onclick="filterGallery('friends-rony')" id="filter-friends-rony" class="filter-btn">
-                        👥 חברים רוני
-                    </button>
-                    <button onclick="filterGallery('friends-sarah')" id="filter-friends-sarah" class="filter-btn">
-                        👭 חברות שרה
-                    </button>
-                    <button onclick="filterGallery('family-rony')" id="filter-family-rony" class="filter-btn">
-                        👨‍👩‍👧‍👦 משפחה רוני
-                    </button>
-                    <button onclick="filterGallery('family-sarah')" id="filter-family-sarah" class="filter-btn">
-                        👨‍👩‍👧‍👦 משפחה שרה
-                    </button>
-                    <button onclick="filterGallery('family-friends')" id="filter-family-friends" class="filter-btn">
-                        👨‍👩‍👧‍👦 חברים משפחה
-                    </button>
+                
+                <div class="form-group">
+                    <label>סיסמה:</label>
+                    <input type="password" id="galleryPassword" placeholder="הכנס סיסמה">
                 </div>
+                
+                <button class="btn" onclick="checkPassword()">🔓 כניסה</button>
+                <button class="btn btn-danger" onclick="goHome()">↩️ חזור</button>
+            </div>
+        </div>
 
-                <!-- תוכן הגלריה -->
-                <div id="publicGalleryContent"></div>
-
+        <!-- גלריה פרטית -->
+        <div id="galleryPage" class="hidden">
+            <div class="content-card">
+                <h2 style="text-align: center;">👑 הגלריה שלכם</h2>
+                
+                <div id="galleryStats" class="status"></div>
+                
+                <div id="allPhotosDisplay"></div>
+                
                 <div>
-                    <button class="btn" onclick="downloadAllPhotos()">📥 הורד את כל התמונות</button>
-                    <button class="btn" onclick="refreshGallery()">🔄 רענן גלריה</button>
-                    <button class="btn btn-gallery" onclick="goHome()">🏠 חזור לדף הבית</button>
+                    <button class="btn" onclick="downloadAll()">📥 הורד הכל</button>
+                    <button class="btn" onclick="refreshGallery()">🔄 רענן</button>
+                    <button class="btn btn-gallery" onclick="goHome()">🏠 חזור</button>
                 </div>
             </div>
         </div>
@@ -669,7 +676,14 @@
     </div>
 
     <script>
-        // הגדרות בסיסיות
+        // הגדרות עם Google Drive
+        const GOOGLE_DRIVE_CONFIG = {
+            clientId: '967885226703-ol8ovgfju4fo60ep51cr3ag1upnj885n.apps.googleusercontent.com',
+            clientSecret: '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',
+            redirectUri: 'http://localhost:8080',
+            scope: 'https://www.googleapis.com/auth/drive.file'
+        };
+
         const CATEGORIES = [
             { id: 'friends-rony', name: '👥 חברים רוני', emoji: '👥' },
             { id: 'friends-sarah', name: '👭 חברות שרה', emoji: '👭' },
@@ -680,75 +694,17 @@
 
         // הגדרות דיסקורד - מוכן לפעולה! 🚀
         const DISCORD_WEBHOOK_URL = "https://discordapp.com/api/webhooks/1392889391546106098/Wdy65BtcTioI3AFfW0MdepV3WsvQo_26nezIsMOV2U1W-g0zYH7Jao-rinatGrDoEQnc";
+        const PASSWORD = "sarahrony2025";
 
-        let currentUser = null;
+        let currentGuest = '';
+        let currentCategory = '';
         let cameraStream = null;
         let currentFacingMode = 'user';
-        let selectedFilter = 'all';
+        let accessToken = null;
 
-        // פונקציות כניסה ויציאה
-        function loginUser() {
-            const name = document.getElementById('userName').value.trim();
-            const category = document.getElementById('categorySelect').value;
-            
-            if (!name) {
-                showMessage('loginMessage', 'אנא הכנס שם מלא', 'error');
-                return;
-            }
-
-            if (!category) {
-                showMessage('loginMessage', 'אנא בחר קטגוריה', 'error');
-                return;
-            }
-
-            // כניסה פתוחה לכולם! 🎉
-            showMessage('loginMessage', 'ברוך הבא לחתונה! נכנסת בהצלחה 🎉', 'success');
-
-            // התחברות מוצלחת
-            currentUser = {
-                email: `${name.replace(/\s+/g, '').toLowerCase()}@wedding.guest`,
-                name: name,
-                category: category,
-                categoryName: CATEGORIES.find(c => c.id === category)?.name
-            };
-
-            // שמירה ב-localStorage
-            localStorage.setItem('wedding-user', JSON.stringify(currentUser));
-            
-            setTimeout(() => {
-                showMainPage();
-            }, 1500);
-        }
-
-        function logout() {
-            if (confirm('האם אתה בטוח שאתה רוצה להתנתק?')) {
-                currentUser = null;
-                localStorage.removeItem('wedding-user');
-                showPage('loginPage');
-            }
-        }
-
-        function showMainPage() {
-            if (!currentUser) return;
-            
-            document.getElementById('welcomeName').textContent = currentUser.name;
-            document.getElementById('userCategoryDisplay').textContent = currentUser.categoryName;
-            
-            showPage('mainPage');
-        }
-
-        // פונקציות עזר
-        function showMessage(elementId, message, type = 'info') {
-            const element = document.getElementById(elementId);
-            element.innerHTML = `<div class="${type}-message">${message}</div>`;
-            
-            setTimeout(() => {
-                element.innerHTML = '';
-            }, 5000);
-        }
-
+        // ניווט בין דפים
         function showPage(pageId) {
-            document.querySelectorAll('.container > div[id$="Page"]').forEach(div => {
+            document.querySelectorAll('.container > div').forEach(div => {
                 div.classList.add('hidden');
             });
             document.getElementById(pageId).classList.remove('hidden');
@@ -762,539 +718,289 @@
             showPage('mainPage');
         }
 
-        function showGalleryPreview() {
-            showPage('publicGalleryPage');
-            loadPublicGallery();
+        function goToCamera() {
+            showPage('cameraPage');
         }
 
-        // פונקציה חדשה - בדיקת מצלמה ישירה
-        async function testCamera() {
-            // יצירת משתמש זמני לבדיקה
-            currentUser = {
-                email: 'test@wedding.guest',
-                name: 'בדיקה',
-                category: 'friends-rony',
-                categoryName: '👥 חברים רוני'
-            };
-            
-            console.log('🧪 מצב בדיקה - פותח מצלמה ישירות');
-            
-            try {
-                console.log('🔄 מבקש גישה למצלמה...');
-                
-                cameraStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: currentFacingMode }
-                });
-
-                console.log('✅ מצלמה התחברה בהצלחה!');
-
-                const video = document.getElementById('video');
-                video.srcObject = cameraStream;
-                video.onloadedmetadata = () => {
-                    console.log('✅ וידאו טעון, מתחיל לנגן...');
-                    video.play();
-                };
-                
-                showPage('cameraPage');
-                updatePhotoCount();
-                
-                document.getElementById('photoStatus').textContent = `📸 מצב בדיקה - מוכן לצילום!`;
-                console.log('✅ מצלמה מוכנה לצילום!');
-                
-            } catch (error) {
-                console.error('❌ שגיאה במצלמה:', error);
-                
-                let errorMessage = 'לא ניתן לפתוח את המצלמה. ';
-                
-                if (error.name === 'NotAllowedError') {
-                    errorMessage += 'אנא אפשר גישה למצלמה בדפדפן.';
-                } else if (error.name === 'NotFoundError') {
-                    errorMessage += 'לא נמצאה מצלמה במכשיר.';
-                } else if (error.name === 'NotSupportedError') {
-                    errorMessage += 'המצלמה לא נתמכת בדפדפן הזה.';
-                } else {
-                    errorMessage += `שגיאה: ${error.message}`;
-                }
-                
-                alert(errorMessage);
-                console.log('❌ פרטי שגיאה:', error);
-            }
+        function showGallery() {
+            showPage('galleryLoginPage');
         }
 
-        // פונקציות מצלמה
+        // התחלת מצלמה
         async function startCamera() {
-            console.log('🎥 מנסה לפתוח מצלמה...');
-            
-            if (!currentUser) {
-                alert('יש להתחבר קודם');
-                console.log('❌ אין משתמש מחובר');
+            const name = document.getElementById('guestName').value.trim();
+            if (!name) {
+                alert('אנא הכנס את שמך');
                 return;
             }
 
-            console.log('✅ משתמש מחובר:', currentUser.name);
+            currentGuest = name;
+            document.getElementById('guestNameDisplay').textContent = name;
 
             try {
-                console.log('🔄 מבקש גישה למצלמה...');
-                
                 cameraStream = await navigator.mediaDevices.getUserMedia({
                     video: { facingMode: currentFacingMode }
                 });
-
-                console.log('✅ מצלמה התחברה בהצלחה!');
 
                 const video = document.getElementById('video');
                 video.srcObject = cameraStream;
-                video.onloadedmetadata = () => {
-                    console.log('✅ וידאו טעון, מתחיל לנגן...');
-                    video.play();
-                };
-                
+
                 showPage('cameraPage');
-                updatePhotoCount();
-                
-                document.getElementById('photoStatus').textContent = `📸 מוכן לצילום! קטגוריה: ${currentUser.categoryName}`;
-                console.log('✅ מצלמה מוכנה לצילום!');
+                showStatus('📸 מוכן לצילום! לחץ על צלם תמונה');
                 
             } catch (error) {
-                console.error('❌ שגיאה במצלמה:', error);
-                
-                let errorMessage = 'לא ניתן לפתוח את המצלמה. ';
-                
-                if (error.name === 'NotAllowedError') {
-                    errorMessage += 'אנא אפשר גישה למצלמה בדפדפן.';
-                } else if (error.name === 'NotFoundError') {
-                    errorMessage += 'לא נמצאה מצלמה במכשיר.';
-                } else if (error.name === 'NotSupportedError') {
-                    errorMessage += 'המצלמה לא נתמכת בדפדפן הזה.';
-                } else {
-                    errorMessage += `שגיאה: ${error.message}`;
-                }
-                
-                alert(errorMessage);
-                document.getElementById('photoStatus').textContent = '❌ ' + errorMessage;
+                alert('לא ניתן לפתוח את המצלמה. ודא שנתת הרשאה.');
             }
         }
 
-        async function flipCamera() {
-            if (!cameraStream) return;
-
-            try {
-                cameraStream.getTracks().forEach(track => track.stop());
-                currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
-                
-                cameraStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: currentFacingMode }
-                });
-
-                document.getElementById('video').srcObject = cameraStream;
-                document.getElementById('photoStatus').textContent = `🔄 הוחלף למצלמה ${currentFacingMode === 'user' ? 'קדמית' : 'אחורית'}`;
-
-            } catch (error) {
-                currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
-                document.getElementById('photoStatus').textContent = '❌ החלפת מצלמה נכשלה';
-            }
-        }
-
-        function capturePhoto() {
-            console.log('📸 מנסה לצלם תמונה...');
-            
-            if (!currentUser) {
-                alert('יש להתחבר קודם');
-                console.log('❌ אין משתמש מחובר');
-                return;
-            }
-
-            console.log('✅ משתמש מחובר:', currentUser.name);
+        // צילום תמונה
+        function takePhoto() {
+            if (!currentGuest) return;
 
             const video = document.getElementById('video');
             const canvas = document.getElementById('canvas');
-            
-            console.log('🔍 בודק וידאו:', {
-                videoWidth: video.videoWidth,
-                videoHeight: video.videoHeight,
-                readyState: video.readyState,
-                paused: video.paused
-            });
-            
-            if (!video.videoWidth || video.videoWidth === 0) {
-                console.log('❌ המצלמה לא מוכנה');
-                alert('המצלמה לא מוכנה. אנא חכה שניה ונסה שוב.');
-                document.getElementById('photoStatus').textContent = '❌ המצלמה לא מוכנה';
+
+            if (!video.videoWidth) {
+                alert('המצלמה לא מוכנה');
                 return;
             }
 
-            console.log('🎨 מכין קנבס...');
+            // צילום
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             canvas.getContext('2d').drawImage(video, 0, 0);
 
-            console.log('📊 יוצר נתוני תמונה...');
             const photoData = {
                 id: Date.now(),
-                data: canvas.toDataURL('image/jpeg', 0.8),
-                timestamp: new Date().toISOString(),
-                user: currentUser.name,
-                email: currentUser.email,
-                category: currentUser.category,
-                categoryName: currentUser.categoryName,
-                timeDisplay: new Date().toLocaleString('he-IL')
+                imageData: canvas.toDataURL('image/jpeg', 0.8),
+                guest: currentGuest,
+                time: new Date().toLocaleString('he-IL')
             };
 
-            console.log('💾 שומר תמונה...', {
-                user: photoData.user,
-                category: photoData.category,
-                dataLength: photoData.data.length
-            });
+            // שמירת התמונה
+            savePhoto(photoData);
 
-            // שמירה מקומית
-            savePhotoLocally(photoData);
-            
-            // שליחה לדיסקורד! 🎉
-            sendPhotoToDiscord(photoData);
-            
-            // עדכון מונה
-            updatePhotoCount();
-            
-            document.getElementById('photoStatus').textContent = '✅ התמונה נשמרה בהצלחה!';
-            console.log('✅ תמונה נשמרה בהצלחה!');
-            
-            // הודעת הצלחה זמנית
-            setTimeout(() => {
-                document.getElementById('photoStatus').textContent = '📸 מוכן לצילום נוסף!';
-            }, 2000);
+            const photoCount = getGuestPhotos(currentGuest).length;
+            showStatus(`✅ תמונה נשמרה! יש לך כעת ${photoCount} תמונות`);
         }
 
-        function savePhotoLocally(photoData) {
-            console.log('💾 שומר תמונה מקומית...', { 
-                user: photoData.user, 
-                category: photoData.category
-            });
-            
-            try {
-                // שמירה של כל התמונות
-                let allPhotos = JSON.parse(localStorage.getItem('wedding-all-photos') || '[]');
-                allPhotos.push(photoData);
-                localStorage.setItem('wedding-all-photos', JSON.stringify(allPhotos));
-
-                // שמירה של תמונות המשתמש הנוכחי
-                let myPhotos = JSON.parse(localStorage.getItem(`wedding-photos-${currentUser.email}`) || '[]');
-                myPhotos.push(photoData);
-                localStorage.setItem(`wedding-photos-${currentUser.email}`, JSON.stringify(myPhotos));
-                
-                console.log('✅ תמונה נשמרה מקומית בהצלחה!');
-            } catch (error) {
-                console.error('❌ שגיאה בשמירה מקומית:', error);
-                alert('שגיאה בשמירת התמונה. אנא נסה שוב.');
+        // שמירת תמונה ושליחה ל-Discord
+        async function savePhoto(photoData) {
+            // שמירה מקומית כגיבוי
+            let allPhotos = JSON.parse(localStorage.getItem('allWeddingPhotos') || '{}');
+            if (!allPhotos[currentGuest]) {
+                allPhotos[currentGuest] = [];
             }
-        }
+            allPhotos[currentGuest].push(photoData);
+            localStorage.setItem('allWeddingPhotos', JSON.stringify(allPhotos));
 
-        // פונקציה חדשה - שליחה לדיסקורד! 🚀
-        async function sendPhotoToDiscord(photoData) {
-            if (!DISCORD_WEBHOOK_URL || DISCORD_WEBHOOK_URL === "YOUR_DISCORD_WEBHOOK_URL_HERE") {
-                console.log('⚠️ לא הוגדר WEBHOOK URL לדיסקורד');
-                return;
-            }
-
+            // שליחה ל-Discord
             try {
-                console.log('📤 שולח תמונה לדיסקורד...', {
-                    user: photoData.user,
-                    category: photoData.categoryName
-                });
+                showStatus('📤 שולח תמונה ל-Discord...');
+
+                // הכנת הנתונים ל-Discord
+                const formData = new FormData();
 
                 // המרת התמונה לקובץ
-                const response = await fetch(photoData.data);
+                const response = await fetch(photoData.imageData);
                 const blob = await response.blob();
+                formData.append('file', blob, `${photoData.guest}_${photoData.id}.jpg`);
                 
-                // יצירת FormData לשליחה
-                const formData = new FormData();
-                
-                // הודעה עם פרטי המשתמש
+                // הודעה עם פרטים
                 const message = {
-                    content: `📸 **תמונה חדשה מהחתונה!** 🎉\n\n👤 **מאת:** ${photoData.user}\n📂 **קטגוריה:** ${photoData.categoryName}\n⏰ **זמן:** ${photoData.timeDisplay}`,
-                    username: "📷 מצלמת החתונה",
-                    avatar_url: "https://cdn.discordapp.com/emojis/📸.png"
+                    content: `🎉 **תמונה חדשה מהחתונה!**\n\n👤 **אורח:** ${photoData.guest}\n🕐 **זמן:** ${photoData.time}\n📸 **מספר תמונה:** ${getGuestPhotos(currentGuest).length}`
                 };
-                
-                formData.append('payload_json', JSON.stringify(message));
-                formData.append('file', blob, `${photoData.user}_${Date.now()}.jpg`);
 
-                // שליחה לדיסקורד
-                const discordResponse = await fetch(DISCORD_WEBHOOK_URL, {
+                formData.append('payload_json', JSON.stringify(message));
+
+                // שליחה ל-Discord Webhook
+                const webhookResponse = await fetch(DISCORD_WEBHOOK_URL, {
                     method: 'POST',
                     body: formData
                 });
 
-                if (discordResponse.ok) {
-                    console.log('✅ תמונה נשלחה לדיסקורד בהצלחה!');
-                    
-                    // הודעה למשתמש
-                    document.getElementById('photoStatus').textContent = '✅ התמונה נשמרה ונשלחה לדיסקורד!';
+                if (webhookResponse.ok) {
+                    showStatus('✅ תמונה נשלחה בהצלחה ל-Discord!');
                 } else {
-                    throw new Error(`Discord API Error: ${discordResponse.status}`);
+                    throw new Error('שגיאה בשליחה ל-Discord');
                 }
 
             } catch (error) {
-                console.error('❌ שגיאה בשליחה לדיסקורד:', error);
-                
-                // עדיין מציג הצלחה כי התמונה נשמרה מקומית
-                document.getElementById('photoStatus').textContent = '✅ התמונה נשמרה! (לא ניתן לשלוח לדיסקורד כרגע)';
+                console.error('שגיאה בשליחת תמונה ל-Discord:', error);
+                showStatus('⚠️ תמונה נשמרה מקומית, אבל לא נשלחה ל-Discord');
             }
         }
 
-        function loadPhotosFromLocalStorage() {
-            console.log('📱 טוען תמונות מקומיות...');
-            const photos = JSON.parse(localStorage.getItem('wedding-all-photos') || '[]');
-            
-            // מיון לפי זמן (החדשות ראשון)
-            photos.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-            
-            console.log(`📥 טוען ${photos.length} תמונות מקומיות`);
-            return photos;
+        // קבלת תמונות של אורח
+        function getGuestPhotos(guestName) {
+            const allPhotos = JSON.parse(localStorage.getItem('allWeddingPhotos') || '{}');
+            return allPhotos[guestName] || [];
         }
 
-        function updatePhotoCount() {
-            if (!currentUser) return;
-            
-            const myPhotos = JSON.parse(localStorage.getItem(`wedding-photos-${currentUser.email}`) || '[]');
-            document.getElementById('photoCount').textContent = myPhotos.length;
-        }
-
-        function goBackToCamera() {
-            showPage('cameraPage');
-        }
-
-        // פונקציות גלריה
-        function viewMyPhotos() {
-            if (!currentUser) {
-                alert('יש להתחבר קודם');
-                return;
-            }
-
-            const myPhotos = JSON.parse(localStorage.getItem(`wedding-photos-${currentUser.email}`) || '[]');
-            
-            showPage('myPhotosPage');
-            const grid = document.getElementById('myPhotosGrid');
+        // הצגת התמונות שלי
+        function showMyPhotos() {
+            const myPhotos = getGuestPhotos(currentGuest);
+            const grid = document.getElementById('myPhotosList');
 
             if (myPhotos.length === 0) {
-                grid.innerHTML = '<p style="text-align: center; color: #8b7355; font-size: 1.2rem;">אין תמונות עדיין 📸<br>לך לצלם כמה תמונות!</p>';
-                return;
-            }
-
-            grid.innerHTML = '';
-            // מציג תמונות בסדר הפוך (החדשות ראשון)
-            myPhotos.slice().reverse().forEach((photo, index) => {
-                const photoDiv = document.createElement('div');
-                photoDiv.className = 'photo-item';
-                photoDiv.innerHTML = `
-                    <img src="${photo.data}" alt="תמונה ${index + 1}">
-                    <div style="position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; padding: 3px 8px; border-radius: 8px; font-size: 10px;">
-                        ${photo.timeDisplay.split(' ')[1]}
-                    </div>
-                    <div style="position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.7); color: white; padding: 3px 8px; border-radius: 8px; font-size: 10px;">
-                        ${index + 1}/${myPhotos.length}
-                    </div>
-                `;
-                grid.appendChild(photoDiv);
-            });
-        }
-
-        function showPublicGallery() {
-            showPage('publicGalleryPage');
-            loadPublicGallery();
-        }
-
-        function loadPublicGallery() {
-            const galleryContent = document.getElementById('publicGalleryContent');
-            galleryContent.innerHTML = '<div style="text-align: center; padding: 20px; color: #8b7355;">📥 טוען תמונות...</div>';
-            
-            // טעינה מ-localStorage
-            const allPhotos = loadPhotosFromLocalStorage();
-
-            if (allPhotos.length === 0) {
-                galleryContent.innerHTML = `
-                    <div style="text-align: center; padding: 40px; background: rgba(250, 247, 243, 0.95); border-radius: 20px; border: 2px solid #e6d0b8;">
-                        <h3 style="color: #5a7c65; margin-bottom: 15px;">🎉 ברוכים הבאים לגלריית החתונה!</h3>
-                        <p style="color: #8b7355; font-size: 16px;">אין תמונות עדיין. התמונות יופיעו כאן אחרי שהאורחים יתחילו לצלם.</p>
-                        <p style="color: #8b7355; font-size: 14px; margin-top: 15px;">📱 גלריה מקומית + דיסקורד</p>
-                    </div>
-                `;
-                return;
-            }
-
-            // קיבוץ תמונות לפי קטגוריות
-            const photosByCategory = {};
-            let totalPhotos = 0;
-            const uniqueUsers = new Set();
-
-            allPhotos.forEach(photo => {
-                if (!photosByCategory[photo.category]) {
-                    photosByCategory[photo.category] = {};
-                }
-                if (!photosByCategory[photo.category][photo.user]) {
-                    photosByCategory[photo.category][photo.user] = [];
-                }
-                photosByCategory[photo.category][photo.user].push(photo);
-                totalPhotos++;
-                uniqueUsers.add(photo.user);
-            });
-
-            galleryContent.innerHTML = '';
-
-            // סיכום כללי
-            const summary = document.createElement('div');
-            summary.className = 'status-card';
-            summary.style.background = 'rgba(90, 124, 101, 0.2)';
-            summary.style.fontSize = '18px';
-            
-            summary.innerHTML = `
-                📊 <strong>גלריית החתונה המשותפת</strong><br>
-                <div style="margin: 10px 0; font-size: 24px;">
-                    🎉 ${totalPhotos} תמונות מ-${uniqueUsers.size} אורחים 🎉
-                </div>
-                <div style="font-size: 14px; color: #5a7c65;">
-                    📱 מקומי + 🎮 דיסקורד | עודכן: ${new Date().toLocaleString('he-IL')}
-                </div>
-            `;
-            galleryContent.appendChild(summary);
-
-            // הצגת תמונות לפי קטגוריות
-            CATEGORIES.forEach(category => {
-                const categoryPhotos = photosByCategory[category.id];
-                if (!categoryPhotos || Object.keys(categoryPhotos).length === 0) return;
-
-                const categorySection = document.createElement('div');
-                categorySection.className = 'guest-section';
-                categorySection.setAttribute('data-category', category.id);
-                
-                let categoryTotalPhotos = 0;
-                Object.keys(categoryPhotos).forEach(user => {
-                    categoryTotalPhotos += categoryPhotos[user].length;
+                grid.innerHTML = '<p style="text-align: center;">אין תמונות עדיין</p>';
+            } else {
+                grid.innerHTML = '';
+                myPhotos.forEach((photo, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'photo-item';
+                    div.innerHTML = `
+                        <img src="${photo.imageData}" alt="תמונה ${index + 1}">
+                        <div style="position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; padding: 3px 6px; border-radius: 5px; font-size: 12px;">
+                            ${index + 1}
+                        </div>
+                    `;
+                    grid.appendChild(div);
                 });
+            }
+
+            showPage('myPhotosPage');
+        }
+
+        // בדיקת סיסמה לגלריה
+        function checkPassword() {
+            const password = document.getElementById('galleryPassword').value;
+            if (password === PASSWORD) {
+                showPage('galleryPage');
+                loadGallery();
+            } else {
+                alert('סיסמה שגויה!');
+            }
+        }
+
+        // טעינת הגלריה הפרטית
+        function loadGallery() {
+            const allPhotos = JSON.parse(localStorage.getItem('allWeddingPhotos') || '{}');
+            const display = document.getElementById('allPhotosDisplay');
+            const stats = document.getElementById('galleryStats');
+
+            if (Object.keys(allPhotos).length === 0) {
+                display.innerHTML = '<p style="text-align: center;">אין תמונות עדיין</p>';
+                stats.textContent = 'עדיין אין תמונות מאורחים';
+                return;
+            }
+
+            display.innerHTML = '';
+            let totalPhotos = 0;
+
+            Object.keys(allPhotos).forEach(guestName => {
+                const guestPhotos = allPhotos[guestName];
+                totalPhotos += guestPhotos.length;
+
+                const section = document.createElement('div');
+                section.className = 'guest-section';
 
                 const title = document.createElement('h3');
-                title.innerHTML = `${category.emoji} ${category.name} (${categoryTotalPhotos} תמונות)`;
-                title.style.color = '#5a7c65';
-                title.style.margin = '2rem 0 1rem';
-                title.style.fontSize = '1.5rem';
-                title.style.textAlign = 'center';
-                categorySection.appendChild(title);
+                title.textContent = `${guestName} (${guestPhotos.length} תמונות)`;
+                section.appendChild(title);
 
-                Object.keys(categoryPhotos).forEach(userName => {
-                    const userPhotos = categoryPhotos[userName];
-                    if (userPhotos.length === 0) return;
+                const grid = document.createElement('div');
+                grid.className = 'photos-grid';
 
-                    const userDiv = document.createElement('div');
-                    userDiv.style.marginBottom = '25px';
-                    
-                    const userTitle = document.createElement('h4');
-                    userTitle.style.color = '#8b7355';
-                    userTitle.style.margin = '1.5rem 0 1rem';
-                    userTitle.style.fontSize = '1.3rem';
-                    userTitle.style.fontWeight = '500';
-                    userTitle.textContent = `${userName} (${userPhotos.length} תמונות)`;
-                    userDiv.appendChild(userTitle);
-                    
-                    const grid = document.createElement('div');
-                    grid.className = 'gallery-grid';
-                    
-                    userPhotos.slice().reverse().forEach((photo, index) => {
-                        const photoDiv = document.createElement('div');
-                        photoDiv.className = 'photo-item';
-                        
-                        const timestamp = new Date(photo.timestamp).toLocaleString('he-IL');
-                        
-                        photoDiv.innerHTML = `
-                            <img src="${photo.data}" alt="תמונה של ${userName}" loading="lazy">
-                            <div style="position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.7); color: white; padding: 3px 8px; border-radius: 8px; font-size: 11px;">
-                                📸 ${index + 1}/${userPhotos.length}
-                            </div>
-                            <div style="position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; padding: 3px 8px; border-radius: 8px; font-size: 10px;">
-                                ${timestamp.split(' ')[1]}
-                            </div>
-                        `;
-                        grid.appendChild(photoDiv);
-                    });
-                    
-                    userDiv.appendChild(grid);
-                    categorySection.appendChild(userDiv);
+                guestPhotos.forEach((photo, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'photo-item';
+                    div.innerHTML = `
+                        <img src="${photo.imageData}" alt="תמונה של ${guestName}">
+                        <div style="position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; padding: 3px 6px; border-radius: 5px; font-size: 10px;">
+                            ${photo.time}
+                        </div>
+                    `;
+                    grid.appendChild(div);
                 });
-                
-                galleryContent.appendChild(categorySection);
+
+                section.appendChild(grid);
+                display.appendChild(section);
             });
+
+            stats.textContent = `📊 סה"כ: ${totalPhotos} תמונות מ-${Object.keys(allPhotos).length} אורחים`;
         }
 
-        function filterGallery(categoryId) {
-            selectedFilter = categoryId;
-            
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.getElementById(`filter-${categoryId}`).classList.add('active');
-
-            const sections = document.querySelectorAll('[data-category]');
-            sections.forEach(section => {
-                if (categoryId === 'all' || section.getAttribute('data-category') === categoryId) {
-                    section.style.display = 'block';
-                } else {
-                    section.style.display = 'none';
-                }
-            });
-        }
-
+        // רענון גלריה
         function refreshGallery() {
-            loadPublicGallery();
+            loadGallery();
+            showStatus('🔄 הגלריה רועננה!');
         }
 
-        function downloadAllPhotos() {
-            const allPhotos = loadPhotosFromLocalStorage();
-            
-            if (allPhotos.length === 0) {
-                alert('אין תמונות להורדה');
+        // הורדת כל התמונות
+        function downloadAll() {
+            const allPhotos = JSON.parse(localStorage.getItem('allWeddingPhotos') || '{}');
+            let count = 0;
+
+            Object.keys(allPhotos).forEach(guestName => {
+                allPhotos[guestName].forEach((photo, index) => {
+                    setTimeout(() => {
+                        const link = document.createElement('a');
+                        link.download = `${guestName}_${index + 1}.jpg`;
+                        link.href = photo.imageData;
+                        link.click();
+                    }, count * 100);
+                    count++;
+                });
+            });
+
+            if (count > 0) {
+                alert(`מוריד ${count} תמונות...`);
+            }
+        }
+
+        // החלפת מצלמה
+        async function flipCamera() {
+            if (!cameraStream) {
+                alert('המצלמה לא פעילה');
                 return;
             }
 
-            let count = 0;
-            allPhotos.forEach((photo, index) => {
-                setTimeout(() => {
-                    const link = document.createElement('a');
-                    const categoryName = CATEGORIES.find(c => c.id === photo.category)?.name.split(' ').slice(1).join(' ') || photo.category;
-                    link.download = `${categoryName}_${photo.user}_${index + 1}.jpg`;
-                    link.href = photo.data;
-                    link.click();
-                }, count * 100);
-                count++;
-            });
+            try {
+                // עצירת המצלמה הנוכחית
+                cameraStream.getTracks().forEach(track => track.stop());
+                
+                // החלפת המצב
+                currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+                
+                // הפעלת המצלמה החדשה
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: currentFacingMode }
+                });
 
-            alert(`מוריד ${allPhotos.length} תמונות מכל הקטגוריות...`);
+                const video = document.getElementById('video');
+                video.srcObject = cameraStream;
+                
+                const cameraType = currentFacingMode === 'user' ? 'קדמית (סלפי)' : 'אחורית';
+                showStatus(`🔄 הוחלף למצלמה ${cameraType}`);
+
+            } catch (error) {
+                console.error('שגיאה בהחלפת מצלמה:', error);
+                
+                // חזרה למצב הקודם אם יש שגיאה
+                currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+                
+                alert('לא ניתן להחליף מצלמה. יכול להיות שלמכשיר יש רק מצלמה אחת.');
+                showStatus('❌ החלפת מצלמה נכשלה');
+            }
         }
 
-        // אתחול האתר
+        // הצגת סטטוס
+        function showStatus(message, type = 'ready') {
+            const statusDiv = document.getElementById('photoStatus');
+            if (statusDiv) {
+                statusDiv.textContent = message;
+                statusDiv.className = `status ${type}`;
+                statusDiv.style.display = 'block';
+            }
+        }
+
+        // התחלה
         document.addEventListener('DOMContentLoaded', function() {
+            showPage('mainPage');
             console.log('🎉 אתר החתונה של שרה ורוני מוכן!');
             console.log('💡 גרסה עם דיסקורד - התמונות נשלחות ישירות לערוץ!');
-            console.log('🚀 כולל כפתור בדיקת מצלמה ישיר!');
-            
-            // בדיקת הגדרות דיסקורד
-            if (DISCORD_WEBHOOK_URL === "YOUR_DISCORD_WEBHOOK_URL_HERE") {
-                console.warn('⚠️ צריך להגדיר DISCORD_WEBHOOK_URL');
-            } else {
-                console.log('✅ דיסקורד מוכן!');
-            }
-            
-            // בדיקה אם המשתמש כבר מchובר
-            const savedUser = localStorage.getItem('wedding-user');
-            if (savedUser) {
-                try {
-                    currentUser = JSON.parse(savedUser);
-                    showMainPage();
-                } catch (error) {
-                    console.error('שגיאה בטעינת נתוני משתמש:', error);
-                    localStorage.removeItem('wedding-user');
-                    showPage('loginPage');
-                }
-            } else {
-                showPage('loginPage');
-            }
+            console.log('✅ דיסקורד מוכן!');
         });
     </script>
 </body>
