@@ -759,28 +759,55 @@
 
         // פונקציות מצלמה
         async function startCamera() {
+            console.log('🎥 מנסה לפתוח מצלמה...');
+            
             if (!currentUser) {
                 alert('יש להתחבר קודם');
+                console.log('❌ אין משתמש מחובר');
                 return;
             }
 
+            console.log('✅ משתמש מחובר:', currentUser.name);
+
             try {
+                console.log('🔄 מבקש גישה למצלמה...');
+                
                 cameraStream = await navigator.mediaDevices.getUserMedia({
                     video: { facingMode: currentFacingMode }
                 });
 
+                console.log('✅ מצלמה התחברה בהצלחה!');
+
                 const video = document.getElementById('video');
                 video.srcObject = cameraStream;
-                video.onloadedmetadata = () => video.play();
+                video.onloadedmetadata = () => {
+                    console.log('✅ וידאו טעון, מתחיל לנגן...');
+                    video.play();
+                };
                 
                 showPage('cameraPage');
                 updatePhotoCount();
                 
                 document.getElementById('photoStatus').textContent = `📸 מוכן לצילום! קטגוריה: ${currentUser.categoryName}`;
+                console.log('✅ מצלמה מוכנה לצילום!');
                 
             } catch (error) {
-                console.error('Camera Error:', error);
-                alert('לא ניתן לפתוח את המצלמה.');
+                console.error('❌ שגיאה במצלמה:', error);
+                
+                let errorMessage = 'לא ניתן לפתוח את המצלמה. ';
+                
+                if (error.name === 'NotAllowedError') {
+                    errorMessage += 'אנא אפשר גישה למצלמה בדפדפן.';
+                } else if (error.name === 'NotFoundError') {
+                    errorMessage += 'לא נמצאה מצלמה במכשיר.';
+                } else if (error.name === 'NotSupportedError') {
+                    errorMessage += 'המצלמה לא נתמכת בדפדפן הזה.';
+                } else {
+                    errorMessage += `שגיאה: ${error.message}`;
+                }
+                
+                alert(errorMessage);
+                document.getElementById('photoStatus').textContent = '❌ ' + errorMessage;
             }
         }
 
@@ -805,23 +832,39 @@
         }
 
         function capturePhoto() {
+            console.log('📸 מנסה לצלם תמונה...');
+            
             if (!currentUser) {
                 alert('יש להתחבר קודם');
+                console.log('❌ אין משתמש מחובר');
                 return;
             }
+
+            console.log('✅ משתמש מחובר:', currentUser.name);
 
             const video = document.getElementById('video');
             const canvas = document.getElementById('canvas');
             
-            if (!video.videoWidth) {
-                alert('המצלמה לא מוכנה');
+            console.log('🔍 בודק וידאו:', {
+                videoWidth: video.videoWidth,
+                videoHeight: video.videoHeight,
+                readyState: video.readyState,
+                paused: video.paused
+            });
+            
+            if (!video.videoWidth || video.videoWidth === 0) {
+                console.log('❌ המצלמה לא מוכנה');
+                alert('המצלמה לא מוכנה. אנא חכה שניה ונסה שוב.');
+                document.getElementById('photoStatus').textContent = '❌ המצלמה לא מוכנה';
                 return;
             }
 
+            console.log('🎨 מכין קנבס...');
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             canvas.getContext('2d').drawImage(video, 0, 0);
 
+            console.log('📊 יוצר נתוני תמונה...');
             const photoData = {
                 id: Date.now(),
                 data: canvas.toDataURL('image/jpeg', 0.8),
@@ -833,6 +876,12 @@
                 timeDisplay: new Date().toLocaleString('he-IL')
             };
 
+            console.log('💾 שומר תמונה...', {
+                user: photoData.user,
+                category: photoData.category,
+                dataLength: photoData.data.length
+            });
+
             // שמירה מקומית
             savePhotoLocally(photoData);
             
@@ -840,6 +889,7 @@
             updatePhotoCount();
             
             document.getElementById('photoStatus').textContent = '✅ התמונה נשמרה בהצלחה!';
+            console.log('✅ תמונה נשמרה בהצלחה!');
             
             // הודעת הצלחה זמנית
             setTimeout(() => {
@@ -848,9 +898,13 @@
         }
 
         function savePhotoLocally(photoData) {
+            console.log('💾 שומר תמונה מקומית...', { firebaseReady });
+            
             // שמירה בFirebase (משותף בין כל המכשירים)
-            if (firebaseReady) {
+            if (firebaseReady && typeof firebase !== 'undefined') {
                 savePhotoToFirebase(photoData);
+            } else {
+                console.log('⚠️ Firebase לא זמין - שומר רק מקומית');
             }
 
             // גיבוי מקומי
@@ -861,32 +915,42 @@
             let myPhotos = JSON.parse(localStorage.getItem(`wedding-photos-${currentUser.email}`) || '[]');
             myPhotos.push(photoData);
             localStorage.setItem(`wedding-photos-${currentUser.email}`, JSON.stringify(myPhotos));
+            
+            console.log('✅ תמונה נשמרה מקומית!');
         }
 
         async function savePhotoToFirebase(photoData) {
             try {
+                console.log('🔥 שומר ל-Firebase...', {
+                    user: photoData.user,
+                    category: photoData.category
+                });
+                
                 // שמירה ל-Firebase בזמן אמת
-                await database.ref('wedding-photos').push({
+                const result = await database.ref('wedding-photos').push({
                     ...photoData,
                     uploadTime: firebase.database.ServerValue.TIMESTAMP
                 });
                 
-                console.log('✅ תמונה נשמרה ל-Firebase - כל המכשירים יראו אותה!');
+                console.log('✅ תמונה נשמרה ל-Firebase בהצלחה!', result.key);
                 
                 // עדכון הגלריה בזמן אמת
                 updatePhotoCount();
                 
             } catch (error) {
-                console.error('שגיאה בשמירה ל-Firebase:', error);
+                console.error('❌ שגיאה בשמירה ל-Firebase:', error);
+                console.log('🔄 נמשיך עם שמירה מקומית בלבד');
             }
         }
 
         async function loadPhotosFromFirebase() {
-            if (!firebaseReady) {
+            if (!firebaseReady || typeof firebase === 'undefined') {
+                console.log('📱 טוען תמונות מקומיות...');
                 return JSON.parse(localStorage.getItem('wedding-all-photos') || '[]');
             }
 
             try {
+                console.log('🔥 טוען תמונות מ-Firebase...');
                 const snapshot = await database.ref('wedding-photos').once('value');
                 const photos = [];
                 
@@ -903,6 +967,7 @@
                 
             } catch (error) {
                 console.error('שגיאה בטעינה מ-Firebase:', error);
+                console.log('🔄 חוזר לתמונות מקומיות...');
                 return JSON.parse(localStorage.getItem('wedding-all-photos') || '[]');
             }
         }
