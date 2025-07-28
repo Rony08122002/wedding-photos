@@ -15,8 +15,7 @@
 
         body {
             font-family: 'Noto Sans Hebrew', serif;
-            background: url('fond') center center fixed;
-            background-size: cover;
+            background: linear-gradient(135deg, #f5f0eb 0%, #e8ddd6 100%);
             min-height: 100vh;
             color: #3d3d3d;
             direction: rtl;
@@ -45,26 +44,29 @@
             background-size: contain;
             background-repeat: no-repeat;
             z-index: 99999 !important;
-            opacity: 1 !important;
+            opacity: 0.3 !important;
             pointer-events: none !important;
         }
 
         .corner-decoration.top-right {
             top: 20px !important;
             right: 20px !important;
-            background-image: url('element droite');
+            background: radial-gradient(circle, #d4af8c 1px, transparent 1px);
+            background-size: 20px 20px;
         }
 
         .corner-decoration.top-left {
             top: 20px !important;
             left: 20px !important;
-            background-image: url('element gauche');
+            background: radial-gradient(circle, #5a7c65 1px, transparent 1px);
+            background-size: 20px 20px;
         }
 
         .corner-decoration.bottom-right {
             bottom: 20px !important;
             right: 30px !important;
-            background-image: url('element droite bas');
+            background: radial-gradient(circle, #d4af8c 1px, transparent 1px);
+            background-size: 15px 15px;
             width: 200px;
             height: 200px;
         }
@@ -72,7 +74,8 @@
         .corner-decoration.bottom-left {
             bottom: 20px !important;
             left: 30px !important;
-            background-image: url('element gauche bas');
+            background: radial-gradient(circle, #5a7c65 1px, transparent 1px);
+            background-size: 15px 15px;
             width: 200px;
             height: 200px;
         }
@@ -103,22 +106,28 @@
             width: 80px;
             height: 80px;
             margin: 0 auto 1rem;
-            background-image: url('LOGO');
+            background: linear-gradient(135deg, #d4af8c, #5a7c65);
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
             display: block;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
         }
 
         .wedding-cake {
             width: 120px;
             height: 120px;
             margin: 0 auto 1.5rem;
-            background-image: url('element milieu.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            display: block;
+            background: linear-gradient(135deg, #d4af8c, #5a7c65);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
             animation: float 3s ease-in-out infinite;
         }
 
@@ -505,8 +514,8 @@
     <div class="container">
         <!-- כותרת עם לוגו ועוגת חתונה -->
         <header>
-            <div class="logo"></div>
-            <div class="wedding-cake"></div>
+            <div class="logo">💍</div>
+            <div class="wedding-cake">🎂</div>
             
             <h1>צלמו, שתפו, וזכרו</h1>
             <p>תמונות מהחתונה של שרה ורוני 💍</p>
@@ -660,9 +669,7 @@
     </div>
 
     <script>
-        // כל המיילים מאושרים! (בלי הגבלות)
-        const APPROVED_EMAILS = "ALL"; // מצב מיוחד - כל מייל מאושר
-
+        // הגדרות בסיסיות
         const CATEGORIES = [
             { id: 'friends-rony', name: '👥 חברים רוני', emoji: '👥' },
             { id: 'friends-sarah', name: '👭 חברות שרה', emoji: '👭' },
@@ -696,7 +703,7 @@
 
             // התחברות מוצלחת
             currentUser = {
-                email: `${name.replace(/\s+/g, '').toLowerCase()}@wedding.guest`, // מייל דמה
+                email: `${name.replace(/\s+/g, '').toLowerCase()}@wedding.guest`,
                 name: name,
                 category: category,
                 categoryName: CATEGORIES.find(c => c.id === category)?.name
@@ -898,27 +905,18 @@
         }
 
         function savePhotoLocally(photoData) {
-            console.log('💾 שומר תמונה...', { 
+            console.log('💾 שומר תמונה מקומית...', { 
                 user: photoData.user, 
-                category: photoData.category,
-                firebaseStatus: firebaseReady ? 'זמין' : 'לא זמין'
+                category: photoData.category
             });
             
-            // שמירה בFirebase רק אם זמין
-            if (firebaseReady && database) {
-                try {
-                    savePhotoToFirebase(photoData);
-                } catch (error) {
-                    console.log('⚠️ שגיאה ב-Firebase:', error);
-                }
-            }
-
-            // שמירה מקומית (תמיד עובד)
             try {
+                // שמירה של כל התמונות
                 let allPhotos = JSON.parse(localStorage.getItem('wedding-all-photos') || '[]');
                 allPhotos.push(photoData);
                 localStorage.setItem('wedding-all-photos', JSON.stringify(allPhotos));
 
+                // שמירה של תמונות המשתמש הנוכחי
                 let myPhotos = JSON.parse(localStorage.getItem(`wedding-photos-${currentUser.email}`) || '[]');
                 myPhotos.push(photoData);
                 localStorage.setItem(`wedding-photos-${currentUser.email}`, JSON.stringify(myPhotos));
@@ -926,61 +924,19 @@
                 console.log('✅ תמונה נשמרה מקומית בהצלחה!');
             } catch (error) {
                 console.error('❌ שגיאה בשמירה מקומית:', error);
+                alert('שגיאה בשמירת התמונה. אנא נסה שוב.');
             }
         }
 
-        async function savePhotoToFirebase(photoData) {
-            if (!firebaseReady || !database) {
-                console.log('⚠️ Firebase לא זמין');
-                return;
-            }
+        function loadPhotosFromLocalStorage() {
+            console.log('📱 טוען תמונות מקומיות...');
+            const photos = JSON.parse(localStorage.getItem('wedding-all-photos') || '[]');
             
-            try {
-                console.log('🔥 שומר ל-Firebase...', {
-                    user: photoData.user,
-                    category: photoData.category
-                });
-                
-                // שמירה ל-Firebase בזמן אמת
-                const result = await database.ref('wedding-photos').push({
-                    ...photoData,
-                    uploadTime: firebase.database.ServerValue.TIMESTAMP
-                });
-                
-                console.log('✅ תמונה נשמרה ל-Firebase בהצלחה!', result.key);
-                
-            } catch (error) {
-                console.error('❌ שגיאה בשמירה ל-Firebase:', error);
-            }
-        }
-
-        async function loadPhotosFromFirebase() {
-            if (!firebaseReady || typeof firebase === 'undefined') {
-                console.log('📱 טוען תמונות מקומיות...');
-                return JSON.parse(localStorage.getItem('wedding-all-photos') || '[]');
-            }
-
-            try {
-                console.log('🔥 טוען תמונות מ-Firebase...');
-                const snapshot = await database.ref('wedding-photos').once('value');
-                const photos = [];
-                
-                snapshot.forEach((childSnapshot) => {
-                    const photo = childSnapshot.val();
-                    photos.push(photo);
-                });
-
-                // מיון לפי זמן
-                photos.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                
-                console.log(`📥 טוען ${photos.length} תמונות מ-Firebase`);
-                return photos;
-                
-            } catch (error) {
-                console.error('שגיאה בטעינה מ-Firebase:', error);
-                console.log('🔄 חוזר לתמונות מקומיות...');
-                return JSON.parse(localStorage.getItem('wedding-all-photos') || '[]');
-            }
+            // מיון לפי זמן (החדשות ראשון)
+            photos.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            console.log(`📥 טוען ${photos.length} תמונות מקומיות`);
+            return photos;
         }
 
         function updatePhotoCount() {
@@ -1012,7 +968,8 @@
             }
 
             grid.innerHTML = '';
-            myPhotos.reverse().forEach((photo, index) => {
+            // מציג תמונות בסדר הפוך (החדשות ראשון)
+            myPhotos.slice().reverse().forEach((photo, index) => {
                 const photoDiv = document.createElement('div');
                 photoDiv.className = 'photo-item';
                 photoDiv.innerHTML = `
@@ -1033,19 +990,19 @@
             loadPublicGallery();
         }
 
-        async function loadPublicGallery() {
+        function loadPublicGallery() {
             const galleryContent = document.getElementById('publicGalleryContent');
-            galleryContent.innerHTML = '<div style="text-align: center; padding: 20px; color: #8b7355;">📥 טוען תמונות מהשרת...</div>';
+            galleryContent.innerHTML = '<div style="text-align: center; padding: 20px; color: #8b7355;">📥 טוען תמונות...</div>';
             
-            // טעינה מ-Firebase (משותף) או localStorage (גיבוי)
-            const allPhotos = await loadPhotosFromFirebase();
+            // טעינה מ-localStorage
+            const allPhotos = loadPhotosFromLocalStorage();
 
             if (allPhotos.length === 0) {
                 galleryContent.innerHTML = `
                     <div style="text-align: center; padding: 40px; background: rgba(250, 247, 243, 0.95); border-radius: 20px; border: 2px solid #e6d0b8;">
                         <h3 style="color: #5a7c65; margin-bottom: 15px;">🎉 ברוכים הבאים לגלריית החתונה!</h3>
                         <p style="color: #8b7355; font-size: 16px;">אין תמונות עדיין. התמונות יופיעו כאן אחרי שהאורחים יתחילו לצלם.</p>
-                        <p style="color: #8b7355; font-size: 14px; margin-top: 15px;">🔥 שרת משותף - כל התמונות בזמן אמת!</p>
+                        <p style="color: #8b7355; font-size: 14px; margin-top: 15px;">📱 גלריה מקומית - התמונות נשמרות במכשיר זה</p>
                     </div>
                 `;
                 return;
@@ -1076,16 +1033,13 @@
             summary.style.background = 'rgba(90, 124, 101, 0.2)';
             summary.style.fontSize = '18px';
             
-            const statusIcon = firebaseReady ? '🔥' : '📱';
-            const statusText = firebaseReady ? 'שרת משותף פעיל' : 'מצב מקומי';
-            
             summary.innerHTML = `
                 📊 <strong>גלריית החתונה המשותפת</strong><br>
                 <div style="margin: 10px 0; font-size: 24px;">
                     🎉 ${totalPhotos} תמונות מ-${uniqueUsers.size} אורחים 🎉
                 </div>
                 <div style="font-size: 14px; color: #5a7c65;">
-                    ${statusIcon} ${statusText} | עודכן: ${new Date().toLocaleString('he-IL')}
+                    📱 גלריה מקומית | עודכן: ${new Date().toLocaleString('he-IL')}
                 </div>
             `;
             galleryContent.appendChild(summary);
@@ -1106,6 +1060,10 @@
 
                 const title = document.createElement('h3');
                 title.innerHTML = `${category.emoji} ${category.name} (${categoryTotalPhotos} תמונות)`;
+                title.style.color = '#5a7c65';
+                title.style.margin = '2rem 0 1rem';
+                title.style.fontSize = '1.5rem';
+                title.style.textAlign = 'center';
                 categorySection.appendChild(title);
 
                 Object.keys(categoryPhotos).forEach(userName => {
@@ -1126,7 +1084,7 @@
                     const grid = document.createElement('div');
                     grid.className = 'gallery-grid';
                     
-                    userPhotos.reverse().forEach((photo, index) => {
+                    userPhotos.slice().reverse().forEach((photo, index) => {
                         const photoDiv = document.createElement('div');
                         photoDiv.className = 'photo-item';
                         
@@ -1174,8 +1132,8 @@
             loadPublicGallery();
         }
 
-        async function downloadAllPhotos() {
-            const allPhotos = await loadPhotosFromFirebase();
+        function downloadAllPhotos() {
+            const allPhotos = loadPhotosFromLocalStorage();
             
             if (allPhotos.length === 0) {
                 alert('אין תמונות להורדה');
@@ -1199,18 +1157,23 @@
 
         // אתחול האתר
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎉 אתר החתונה של שרה ורוני מוכן!');
+            console.log('💡 גרסה מתוקנת ללא Firebase - עובד עם localStorage');
+            
             // בדיקה אם המשתמש כבר מחובר
             const savedUser = localStorage.getItem('wedding-user');
             if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                showMainPage();
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    showMainPage();
+                } catch (error) {
+                    console.error('שגיאה בטעינת נתוני משתמש:', error);
+                    localStorage.removeItem('wedding-user');
+                    showPage('loginPage');
+                }
             } else {
                 showPage('loginPage');
             }
-            
-            console.log('🎉 אתר החתונה של שרה ורוני מוכן!');
-            console.log('💡 גרסה חדשה עם כניסה פתוחה לכולם');
-            console.log('🌟 כל מייל מאושר לצילום!');
         });
     </script>
 </body>
