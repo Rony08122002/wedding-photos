@@ -868,15 +868,63 @@
         }
 
         function savePhotoLocally(photoData) {
-            // שמירה גלובלית של כל התמונות
+            // שמירה בFirebase (משותף בין כל המכשירים)
+            if (firebaseReady) {
+                savePhotoToFirebase(photoData);
+            }
+
+            // גיבוי מקומי
             let allPhotos = JSON.parse(localStorage.getItem('wedding-all-photos') || '[]');
             allPhotos.push(photoData);
             localStorage.setItem('wedding-all-photos', JSON.stringify(allPhotos));
 
-            // שמירה אישית של תמונות המשתמש
             let myPhotos = JSON.parse(localStorage.getItem(`wedding-photos-${currentUser.email}`) || '[]');
             myPhotos.push(photoData);
             localStorage.setItem(`wedding-photos-${currentUser.email}`, JSON.stringify(myPhotos));
+        }
+
+        async function savePhotoToFirebase(photoData) {
+            try {
+                // שמירה ל-Firebase בזמן אמת
+                await database.ref('wedding-photos').push({
+                    ...photoData,
+                    uploadTime: firebase.database.ServerValue.TIMESTAMP
+                });
+                
+                console.log('✅ תמונה נשמרה ל-Firebase - כל המכשירים יראו אותה!');
+                
+                // עדכון הגלריה בזמן אמת
+                updatePhotoCount();
+                
+            } catch (error) {
+                console.error('שגיאה בשמירה ל-Firebase:', error);
+            }
+        }
+
+        async function loadPhotosFromFirebase() {
+            if (!firebaseReady) {
+                return JSON.parse(localStorage.getItem('wedding-all-photos') || '[]');
+            }
+
+            try {
+                const snapshot = await database.ref('wedding-photos').once('value');
+                const photos = [];
+                
+                snapshot.forEach((childSnapshot) => {
+                    const photo = childSnapshot.val();
+                    photos.push(photo);
+                });
+
+                // מיון לפי זמן
+                photos.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                
+                console.log(`📥 טוען ${photos.length} תמונות מ-Firebase`);
+                return photos;
+                
+            } catch (error) {
+                console.error('שגיאה בטעינה מ-Firebase:', error);
+                return JSON.parse(localStorage.getItem('wedding-all-photos') || '[]');
+            }
         }
 
         function updatePhotoCount() {
@@ -929,18 +977,19 @@
             loadPublicGallery();
         }
 
-        function loadPublicGallery() {
+        async function loadPublicGallery() {
             const galleryContent = document.getElementById('publicGalleryContent');
-            galleryContent.innerHTML = '<div style="text-align: center; padding: 20px; color: #8b7355;">📥 טוען תמונות...</div>';
+            galleryContent.innerHTML = '<div style="text-align: center; padding: 20px; color: #8b7355;">📥 טוען תמונות מהשרת...</div>';
             
-            const allPhotos = JSON.parse(localStorage.getItem('wedding-all-photos') || '[]');
+            // טעינה מ-Firebase (משותף) או localStorage (גיבוי)
+            const allPhotos = await loadPhotosFromFirebase();
 
             if (allPhotos.length === 0) {
                 galleryContent.innerHTML = `
                     <div style="text-align: center; padding: 40px; background: rgba(250, 247, 243, 0.95); border-radius: 20px; border: 2px solid #e6d0b8;">
                         <h3 style="color: #5a7c65; margin-bottom: 15px;">🎉 ברוכים הבאים לגלריית החתונה!</h3>
                         <p style="color: #8b7355; font-size: 16px;">אין תמונות עדיין. התמונות יופיעו כאן אחרי שהאורחים יתחילו לצלם.</p>
-                        <p style="color: #8b7355; font-size: 14px; margin-top: 15px;">📸 כל התמונות נשמרות ומשותפות אוטומטית!</p>
+                        <p style="color: #8b7355; font-size: 14px; margin-top: 15px;">🔥 שרת משותף - כל התמונות בזמן אמת!</p>
                     </div>
                 `;
                 return;
@@ -971,13 +1020,16 @@
             summary.style.background = 'rgba(90, 124, 101, 0.2)';
             summary.style.fontSize = '18px';
             
+            const statusIcon = firebaseReady ? '🔥' : '📱';
+            const statusText = firebaseReady ? 'שרת משותף פעיל' : 'מצב מקומי';
+            
             summary.innerHTML = `
                 📊 <strong>גלריית החתונה המשותפת</strong><br>
                 <div style="margin: 10px 0; font-size: 24px;">
                     🎉 ${totalPhotos} תמונות מ-${uniqueUsers.size} אורחים 🎉
                 </div>
                 <div style="font-size: 14px; color: #5a7c65;">
-                    עודכן: ${new Date().toLocaleString('he-IL')}
+                    ${statusIcon} ${statusText} | עודכן: ${new Date().toLocaleString('he-IL')}
                 </div>
             `;
             galleryContent.appendChild(summary);
@@ -1066,8 +1118,8 @@
             loadPublicGallery();
         }
 
-        function downloadAllPhotos() {
-            const allPhotos = JSON.parse(localStorage.getItem('wedding-all-photos') || '[]');
+        async function downloadAllPhotos() {
+            const allPhotos = await loadPhotosFromFirebase();
             
             if (allPhotos.length === 0) {
                 alert('אין תמונות להורדה');
@@ -1101,8 +1153,8 @@
             }
             
             console.log('🎉 אתר החתונה של שרה ורוני מוכן!');
-            console.log('💡 גרסה חדשה עם אימות מייל פשוט');
-            console.log('📧 מיילים מאושרים:', APPROVED_EMAILS.length);
+            console.log('💡 גרסה חדשה עם כניסה פתוחה לכולם');
+            console.log('🌟 כל מייל מאושר לצילום!');
         });
     </script>
 </body>
