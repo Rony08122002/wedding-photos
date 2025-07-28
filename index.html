@@ -543,6 +543,7 @@
 
                 <button class="btn" onclick="loginUser()">🚪 כניסה לגלריה</button>
                 <button class="btn btn-gallery" onclick="showGalleryPreview()">👀 הצצה לגלריה</button>
+                <button class="btn" onclick="testCamera()" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">📸 בדיקת מצלמה (ישיר)</button>
             </div>
 
             <div class="center-decoration">🌸 ❦ 🌿 ❦ 🌸</div>
@@ -676,6 +677,180 @@
         let cameraStream = null;
         let currentFacingMode = 'user';
         let selectedFilter = 'all';
+
+        // פונקציות כניסה ויציאה
+        function loginUser() {
+            const name = document.getElementById('userName').value.trim();
+            const category = document.getElementById('categorySelect').value;
+            
+            if (!name) {
+                showMessage('loginMessage', 'אנא הכנס שם מלא', 'error');
+                return;
+            }
+
+            if (!category) {
+                showMessage('loginMessage', 'אנא בחר קטגוריה', 'error');
+                return;
+            }
+
+            // כניסה פתוחה לכולם! 🎉
+            showMessage('loginMessage', 'ברוך הבא לחתונה! נכנסת בהצלחה 🎉', 'success');
+
+            // התחברות מוצלחת
+            currentUser = {
+                email: `${name.replace(/\s+/g, '').toLowerCase()}@wedding.guest`,
+                name: name,
+                category: category,
+                categoryName: CATEGORIES.find(c => c.id === category)?.name
+            };
+
+            // שמירה ב-localStorage
+            localStorage.setItem('wedding-user', JSON.stringify(currentUser));
+            
+            setTimeout(() => {
+                showMainPage();
+            }, 1500);
+        }
+
+        function logout() {
+            if (confirm('האם אתה בטוח שאתה רוצה להתנתק?')) {
+                currentUser = null;
+                localStorage.removeItem('wedding-user');
+                showPage('loginPage');
+            }
+        }
+
+        function showMainPage() {
+            if (!currentUser) return;
+            
+            document.getElementById('welcomeName').textContent = currentUser.name;
+            document.getElementById('userCategoryDisplay').textContent = currentUser.categoryName;
+            
+            showPage('mainPage');
+        }
+
+        // פונקציות עזר
+        function showMessage(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="${type}-message">${message}</div>`;
+            
+            setTimeout(() => {
+                element.innerHTML = '';
+            }, 5000);
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.container > div[id$="Page"]').forEach(div => {
+                div.classList.add('hidden');
+            });
+            document.getElementById(pageId).classList.remove('hidden');
+        }
+
+        function goHome() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+            showPage('mainPage');
+        }
+
+        function showGalleryPreview() {
+            showPage('publicGalleryPage');
+            loadPublicGallery();
+        }
+
+        // פונקציה חדשה - בדיקת מצלמה ישירה
+        async function testCamera() {
+            // יצירת משתמש זמני לבדיקה
+            currentUser = {
+                email: 'test@wedding.guest',
+                name: 'בדיקה',
+                category: 'friends-rony',
+                categoryName: '👥 חברים רוני'
+            };
+            
+            console.log('🧪 מצב בדיקה - פותח מצלמה ישירות');
+            
+            try {
+                console.log('🔄 מבקש גישה למצלמה...');
+                
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: currentFacingMode }
+                });
+
+                console.log('✅ מצלמה התחברה בהצלחה!');
+
+                const video = document.getElementById('video');
+                video.srcObject = cameraStream;
+                video.onloadedmetadata = () => {
+                    console.log('✅ וידאו טעון, מתחיל לנגן...');
+                    video.play();
+                };
+                
+                showPage('cameraPage');
+                updatePhotoCount();
+                
+                document.getElementById('photoStatus').textContent = `📸 מצב בדיקה - מוכן לצילום!`;
+                console.log('✅ מצלמה מוכנה לצילום!');
+                
+            } catch (error) {
+                console.error('❌ שגיאה במצלמה:', error);
+                
+                let errorMessage = 'לא ניתן לפתוח את המצלמה. ';
+                
+                if (error.name === 'NotAllowedError') {
+                    errorMessage += 'אנא אפשר גישה למצלמה בדפדפן.';
+                } else if (error.name === 'NotFoundError') {
+                    errorMessage += 'לא נמצאה מצלמה במכשיר.';
+                } else if (error.name === 'NotSupportedError') {
+                    errorMessage += 'המצלמה לא נתמכת בדפדפן הזה.';
+                } else {
+                    errorMessage += `שגיאה: ${error.message}`;
+                }
+                
+                alert(errorMessage);
+                console.log('❌ פרטי שגיאה:', error);
+            }
+        }
+
+        // פונקציות מצלמה
+        async function startCamera() {
+            console.log('🎥 מנסה לפתוח מצלמה...');
+            
+            if (!currentUser) {
+                alert('יש להתחבר קודם');
+                console.log('❌ אין משתמש מחובר');
+                return;
+            }
+
+            console.log('✅ משתמש מחובר:', currentUser.name);
+
+            try {
+                console.log('🔄 מבקש גישה למצלמה...');
+                
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: currentFacingMode }
+                });
+
+                console.log('✅ מצלמה התחברה בהצלחה!');
+
+                const video = document.getElementById('video');
+                video.srcObject = cameraStream;
+                video.onloadedmetadata = () => {
+                    console.log('✅ וידאו טעון, מתחיל לנגן...');
+                    video.play();
+                };
+                
+                showPage('cameraPage');
+                updatePhotoCount();
+                
+                document.getElementById('photoStatus').textContent = `📸 מוכן לצילום! קטגוריה: ${currentUser.categoryName}`;
+                console.log('✅ מצלמה מוכנה לצילום!');
+                
+            } catch (error) {
+                console.error('❌ שגיאה במצלמה:', error);
+                
+                let errorMessage = 'לא ניתן לפתוח את המצלמה. ';
 
         // פונקציות כניסה ויציאה
         function loginUser() {
