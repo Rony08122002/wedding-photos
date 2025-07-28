@@ -6,7 +6,7 @@
     <title>תמונות מהחתונה של שרה ורוני</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@300;400;500;600;700&family=Dancing+Script:wght@400;500;600;700&display=swap');
-
+        
         * {
             margin: 0;
             padding: 0;
@@ -254,6 +254,14 @@
             background: linear-gradient(135deg, #c82333 0%, #a02331 100%);
         }
 
+        .btn-test {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .btn-test:hover {
+            background: linear-gradient(135deg, #20c997 0%, #17a2b8 100%);
+        }
+
         /* אזור מצלמה */
         .camera-section {
             text-align: center;
@@ -378,24 +386,24 @@
                 width: 180px;
                 height: 180px;
             }
-
+            
             .corner-decoration.top-right,
             .corner-decoration.top-left {
                 top: 10px !important;
             }
-
+            
             .corner-decoration.bottom-right,
             .corner-decoration.bottom-left {
                 bottom: 10px !important;
                 width: 140px;
                 height: 140px;
             }
-
+            
             .corner-decoration.top-right,
             .corner-decoration.bottom-right {
                 right: 5px !important;
             }
-
+            
             .corner-decoration.top-left,
             .corner-decoration.bottom-left {
                 left: 5px !important;
@@ -404,52 +412,52 @@
             .container {
                 padding: 10px;
             }
-
+            
             header {
                 padding: 2rem 1.5rem;
             }
-
+            
             .logo {
                 width: 60px;
                 height: 60px;
             }
-
+            
             .wedding-cake {
                 width: 100px;
                 height: 100px;
             }
-
+            
             header h1 {
                 font-size: 2rem;
             }
-
+            
             .names-english {
                 font-size: 2rem;
             }
-
+            
             .btn {
                 width: 100%;
                 margin: 0.5rem 0;
                 justify-content: center;
             }
-
+            
             #video {
                 width: 100%;
             }
-
+            
             .gallery-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 1rem;
             }
-
+            
             .photo-item img {
                 height: 140px;
             }
-
+            
             .filter-buttons {
                 gap: 0.5rem;
             }
-
+            
             .filter-btn {
                 font-size: 0.9rem;
                 padding: 0.8rem 1.4rem;
@@ -507,10 +515,10 @@
         <header>
             <div class="logo"></div>
             <div class="wedding-cake"></div>
-
+            
             <h1>צלמו, שתפו, וזכרו</h1>
             <p>תמונות מהחתונה של שרה ורוני 💍</p>
-
+            
             <div class="names-english">Sarah & Rony</div>
         </header>
 
@@ -543,7 +551,7 @@
 
                 <button class="btn" onclick="loginUser()">🚪 כניסה לגלריה</button>
                 <button class="btn btn-gallery" onclick="showGalleryPreview()">👀 הצצה לגלריה</button>
-                <button class="btn" onclick="testCamera()" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">📸 בדיקת מצלמה (ישיר)</button>
+                <button class="btn btn-test" onclick="testCamera()">📸 בדיקת מצלמה (ישיר)</button>
             </div>
 
             <div class="center-decoration">🌸 ❦ 🌿 ❦ 🌸</div>
@@ -557,7 +565,7 @@
                     <span id="userCategoryDisplay"></span>
                 </div>
             </div>
-
+            
             <div class="content-card">
                 <div style="text-align: center; margin-bottom: 2rem;">
                     <h2>מה תרצה לעשות?</h2>
@@ -574,21 +582,21 @@
         <div id="cameraPage" class="hidden">
             <div class="content-card camera-section">
                 <h2>📸 מצלמה</h2>
-
+                
                 <div id="photoStatus" class="status-card">מוכן לצילום!</div>
-
+                
                 <video id="video" autoplay playsinline></video>
                 <canvas id="canvas" style="display: none;"></canvas>
-
+                
                 <div>
                     <button class="btn" onclick="capturePhoto()">📸 צלם תמונה</button>
                     <button class="btn" onclick="flipCamera()">🔄 החלף מצלמה</button>
                 </div>
-
+                
                 <div class="status-card" style="background: rgba(90, 124, 101, 0.2); color: #5a7c65;">
                     📊 צילמת <span id="photoCount">0</span> תמונות
                 </div>
-
+                
                 <div>
                     <button class="btn" onclick="viewMyPhotos()">🖼️ התמונות שלי</button>
                     <button class="btn btn-gallery" onclick="goHome()">🏠 חזור לבית</button>
@@ -600,9 +608,9 @@
         <div id="myPhotosPage" class="hidden">
             <div class="content-card">
                 <h2>התמונות שלי</h2>
-
+                
                 <div id="myPhotosGrid" class="gallery-grid"></div>
-
+                
                 <div>
                     <button class="btn" onclick="goBackToCamera()">📸 חזור לצילום</button>
                     <button class="btn btn-gallery" onclick="goHome()">🏠 חזור לבית</button>
@@ -614,7 +622,7 @@
         <div id="publicGalleryPage" class="hidden">
             <div class="content-card">
                 <h1>🎞 הגלריה של כולם</h1>
-
+                
                 <div class="status-card">
                     📊 גלריה משותפת - כל התמונות של כל האורחים!
                 </div>
@@ -682,7 +690,7 @@
         function loginUser() {
             const name = document.getElementById('userName').value.trim();
             const category = document.getElementById('categorySelect').value;
-
+            
             if (!name) {
                 showMessage('loginMessage', 'אנא הכנס שם מלא', 'error');
                 return;
@@ -706,7 +714,7 @@
 
             // שמירה ב-localStorage
             localStorage.setItem('wedding-user', JSON.stringify(currentUser));
-
+            
             setTimeout(() => {
                 showMainPage();
             }, 1500);
@@ -722,10 +730,10 @@
 
         function showMainPage() {
             if (!currentUser) return;
-
+            
             document.getElementById('welcomeName').textContent = currentUser.name;
             document.getElementById('userCategoryDisplay').textContent = currentUser.categoryName;
-
+            
             showPage('mainPage');
         }
 
@@ -733,7 +741,7 @@
         function showMessage(elementId, message, type = 'info') {
             const element = document.getElementById(elementId);
             element.innerHTML = `<div class="${type}-message">${message}</div>`;
-
+            
             setTimeout(() => {
                 element.innerHTML = '';
             }, 5000);
@@ -851,127 +859,7 @@
                 console.error('❌ שגיאה במצלמה:', error);
                 
                 let errorMessage = 'לא ניתן לפתוח את המצלמה. ';
-
-        // פונקציות כניסה ויציאה
-        function loginUser() {
-            const name = document.getElementById('userName').value.trim();
-            const category = document.getElementById('categorySelect').value;
-            
-            if (!name) {
-                showMessage('loginMessage', 'אנא הכנס שם מלא', 'error');
-                return;
-            }
-
-            if (!category) {
-                showMessage('loginMessage', 'אנא בחר קטגוריה', 'error');
-                return;
-            }
-
-            // כניסה פתוחה לכולם! 🎉
-            showMessage('loginMessage', 'ברוך הבא לחתונה! נכנסת בהצלחה 🎉', 'success');
-
-            // התחברות מוצלחת
-            currentUser = {
-                email: `${name.replace(/\s+/g, '').toLowerCase()}@wedding.guest`,
-                name: name,
-                category: category,
-                categoryName: CATEGORIES.find(c => c.id === category)?.name
-            };
-
-            // שמירה ב-localStorage
-            localStorage.setItem('wedding-user', JSON.stringify(currentUser));
-            
-            setTimeout(() => {
-                showMainPage();
-            }, 1500);
-        }
-
-        function logout() {
-            if (confirm('האם אתה בטוח שאתה רוצה להתנתק?')) {
-                currentUser = null;
-                localStorage.removeItem('wedding-user');
-                showPage('loginPage');
-            }
-        }
-
-        function showMainPage() {
-            if (!currentUser) return;
-            
-            document.getElementById('welcomeName').textContent = currentUser.name;
-            document.getElementById('userCategoryDisplay').textContent = currentUser.categoryName;
-            
-            showPage('mainPage');
-        }
-
-        // פונקציות עזר
-        function showMessage(elementId, message, type = 'info') {
-            const element = document.getElementById(elementId);
-            element.innerHTML = `<div class="${type}-message">${message}</div>`;
-            
-            setTimeout(() => {
-                element.innerHTML = '';
-            }, 5000);
-        }
-
-        function showPage(pageId) {
-            document.querySelectorAll('.container > div[id$="Page"]').forEach(div => {
-                div.classList.add('hidden');
-            });
-            document.getElementById(pageId).classList.remove('hidden');
-        }
-
-        function goHome() {
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(track => track.stop());
-                cameraStream = null;
-            }
-            showPage('mainPage');
-        }
-
-        function showGalleryPreview() {
-            showPage('publicGalleryPage');
-            loadPublicGallery();
-        }
-
-        // פונקציות מצלמה
-        async function startCamera() {
-            console.log('🎥 מנסה לפתוח מצלמה...');
-
-            if (!currentUser) {
-                alert('יש להתחבר קודם');
-                console.log('❌ אין משתמש מחובר');
-                return;
-            }
-
-            console.log('✅ משתמש מחובר:', currentUser.name);
-
-            try {
-                console.log('🔄 מבקש גישה למצלמה...');
-
-                cameraStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: currentFacingMode }
-                });
-
-                console.log('✅ מצלמה התחברה בהצלחה!');
-
-                const video = document.getElementById('video');
-                video.srcObject = cameraStream;
-                video.onloadedmetadata = () => {
-                    console.log('✅ וידאו טעון, מתחיל לנגן...');
-                    video.play();
-                };
-
-                showPage('cameraPage');
-                updatePhotoCount();
-
-                document.getElementById('photoStatus').textContent = `📸 מוכן לצילום! קטגוריה: ${currentUser.categoryName}`;
-                console.log('✅ מצלמה מוכנה לצילום!');
-
-            } catch (error) {
-                console.error('❌ שגיאה במצלמה:', error);
-
-                let errorMessage = 'לא ניתן לפתוח את המצלמה. ';
-
+                
                 if (error.name === 'NotAllowedError') {
                     errorMessage += 'אנא אפשר גישה למצלמה בדפדפן.';
                 } else if (error.name === 'NotFoundError') {
@@ -981,7 +869,7 @@
                 } else {
                     errorMessage += `שגיאה: ${error.message}`;
                 }
-
+                
                 alert(errorMessage);
                 document.getElementById('photoStatus').textContent = '❌ ' + errorMessage;
             }
@@ -993,7 +881,7 @@
             try {
                 cameraStream.getTracks().forEach(track => track.stop());
                 currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
-
+                
                 cameraStream = await navigator.mediaDevices.getUserMedia({
                     video: { facingMode: currentFacingMode }
                 });
@@ -1009,7 +897,7 @@
 
         function capturePhoto() {
             console.log('📸 מנסה לצלם תמונה...');
-
+            
             if (!currentUser) {
                 alert('יש להתחבר קודם');
                 console.log('❌ אין משתמש מחובר');
@@ -1020,14 +908,14 @@
 
             const video = document.getElementById('video');
             const canvas = document.getElementById('canvas');
-
+            
             console.log('🔍 בודק וידאו:', {
                 videoWidth: video.videoWidth,
                 videoHeight: video.videoHeight,
                 readyState: video.readyState,
                 paused: video.paused
             });
-
+            
             if (!video.videoWidth || video.videoWidth === 0) {
                 console.log('❌ המצלמה לא מוכנה');
                 alert('המצלמה לא מוכנה. אנא חכה שניה ונסה שוב.');
@@ -1060,16 +948,16 @@
 
             // שמירה מקומית
             savePhotoLocally(photoData);
-
+            
             // שליחה לדיסקורד! 🎉
             sendPhotoToDiscord(photoData);
-
+            
             // עדכון מונה
             updatePhotoCount();
-
+            
             document.getElementById('photoStatus').textContent = '✅ התמונה נשמרה בהצלחה!';
             console.log('✅ תמונה נשמרה בהצלחה!');
-
+            
             // הודעת הצלחה זמנית
             setTimeout(() => {
                 document.getElementById('photoStatus').textContent = '📸 מוכן לצילום נוסף!';
@@ -1081,7 +969,7 @@
                 user: photoData.user, 
                 category: photoData.category
             });
-
+            
             try {
                 // שמירה של כל התמונות
                 let allPhotos = JSON.parse(localStorage.getItem('wedding-all-photos') || '[]');
@@ -1092,7 +980,7 @@
                 let myPhotos = JSON.parse(localStorage.getItem(`wedding-photos-${currentUser.email}`) || '[]');
                 myPhotos.push(photoData);
                 localStorage.setItem(`wedding-photos-${currentUser.email}`, JSON.stringify(myPhotos));
-
+                
                 console.log('✅ תמונה נשמרה מקומית בהצלחה!');
             } catch (error) {
                 console.error('❌ שגיאה בשמירה מקומית:', error);
@@ -1116,17 +1004,17 @@
                 // המרת התמונה לקובץ
                 const response = await fetch(photoData.data);
                 const blob = await response.blob();
-
+                
                 // יצירת FormData לשליחה
                 const formData = new FormData();
-
+                
                 // הודעה עם פרטי המשתמש
                 const message = {
                     content: `📸 **תמונה חדשה מהחתונה!** 🎉\n\n👤 **מאת:** ${photoData.user}\n📂 **קטגוריה:** ${photoData.categoryName}\n⏰ **זמן:** ${photoData.timeDisplay}`,
                     username: "📷 מצלמת החתונה",
                     avatar_url: "https://cdn.discordapp.com/emojis/📸.png"
                 };
-
+                
                 formData.append('payload_json', JSON.stringify(message));
                 formData.append('file', blob, `${photoData.user}_${Date.now()}.jpg`);
 
@@ -1138,7 +1026,7 @@
 
                 if (discordResponse.ok) {
                     console.log('✅ תמונה נשלחה לדיסקורד בהצלחה!');
-
+                    
                     // הודעה למשתמש
                     document.getElementById('photoStatus').textContent = '✅ התמונה נשמרה ונשלחה לדיסקורד!';
                 } else {
@@ -1147,7 +1035,7 @@
 
             } catch (error) {
                 console.error('❌ שגיאה בשליחה לדיסקורד:', error);
-
+                
                 // עדיין מציג הצלחה כי התמונה נשמרה מקומית
                 document.getElementById('photoStatus').textContent = '✅ התמונה נשמרה! (לא ניתן לשלוח לדיסקורד כרגע)';
             }
@@ -1156,17 +1044,17 @@
         function loadPhotosFromLocalStorage() {
             console.log('📱 טוען תמונות מקומיות...');
             const photos = JSON.parse(localStorage.getItem('wedding-all-photos') || '[]');
-
+            
             // מיון לפי זמן (החדשות ראשון)
             photos.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
+            
             console.log(`📥 טוען ${photos.length} תמונות מקומיות`);
             return photos;
         }
 
         function updatePhotoCount() {
             if (!currentUser) return;
-
+            
             const myPhotos = JSON.parse(localStorage.getItem(`wedding-photos-${currentUser.email}`) || '[]');
             document.getElementById('photoCount').textContent = myPhotos.length;
         }
@@ -1183,7 +1071,7 @@
             }
 
             const myPhotos = JSON.parse(localStorage.getItem(`wedding-photos-${currentUser.email}`) || '[]');
-
+            
             showPage('myPhotosPage');
             const grid = document.getElementById('myPhotosGrid');
 
@@ -1218,7 +1106,7 @@
         function loadPublicGallery() {
             const galleryContent = document.getElementById('publicGalleryContent');
             galleryContent.innerHTML = '<div style="text-align: center; padding: 20px; color: #8b7355;">📥 טוען תמונות...</div>';
-
+            
             // טעינה מ-localStorage
             const allPhotos = loadPhotosFromLocalStorage();
 
@@ -1227,7 +1115,7 @@
                     <div style="text-align: center; padding: 40px; background: rgba(250, 247, 243, 0.95); border-radius: 20px; border: 2px solid #e6d0b8;">
                         <h3 style="color: #5a7c65; margin-bottom: 15px;">🎉 ברוכים הבאים לגלריית החתונה!</h3>
                         <p style="color: #8b7355; font-size: 16px;">אין תמונות עדיין. התמונות יופיעו כאן אחרי שהאורחים יתחילו לצלם.</p>
-                        <p style="color: #8b7355; font-size: 14px; margin-top: 15px;">📱 גלריה מקומית - התמונות נשמרות במכשיר זה</p>
+                        <p style="color: #8b7355; font-size: 14px; margin-top: 15px;">📱 גלריה מקומית + דיסקורד</p>
                     </div>
                 `;
                 return;
@@ -1257,14 +1145,14 @@
             summary.className = 'status-card';
             summary.style.background = 'rgba(90, 124, 101, 0.2)';
             summary.style.fontSize = '18px';
-
+            
             summary.innerHTML = `
                 📊 <strong>גלריית החתונה המשותפת</strong><br>
                 <div style="margin: 10px 0; font-size: 24px;">
                     🎉 ${totalPhotos} תמונות מ-${uniqueUsers.size} אורחים 🎉
                 </div>
                 <div style="font-size: 14px; color: #5a7c65;">
-                    📱 גלריה מקומית | עודכן: ${new Date().toLocaleString('he-IL')}
+                    📱 מקומי + 🎮 דיסקורד | עודכן: ${new Date().toLocaleString('he-IL')}
                 </div>
             `;
             galleryContent.appendChild(summary);
@@ -1277,7 +1165,7 @@
                 const categorySection = document.createElement('div');
                 categorySection.className = 'guest-section';
                 categorySection.setAttribute('data-category', category.id);
-
+                
                 let categoryTotalPhotos = 0;
                 Object.keys(categoryPhotos).forEach(user => {
                     categoryTotalPhotos += categoryPhotos[user].length;
@@ -1297,7 +1185,7 @@
 
                     const userDiv = document.createElement('div');
                     userDiv.style.marginBottom = '25px';
-
+                    
                     const userTitle = document.createElement('h4');
                     userTitle.style.color = '#8b7355';
                     userTitle.style.margin = '1.5rem 0 1rem';
@@ -1305,16 +1193,16 @@
                     userTitle.style.fontWeight = '500';
                     userTitle.textContent = `${userName} (${userPhotos.length} תמונות)`;
                     userDiv.appendChild(userTitle);
-
+                    
                     const grid = document.createElement('div');
                     grid.className = 'gallery-grid';
-
+                    
                     userPhotos.slice().reverse().forEach((photo, index) => {
                         const photoDiv = document.createElement('div');
                         photoDiv.className = 'photo-item';
-
+                        
                         const timestamp = new Date(photo.timestamp).toLocaleString('he-IL');
-
+                        
                         photoDiv.innerHTML = `
                             <img src="${photo.data}" alt="תמונה של ${userName}" loading="lazy">
                             <div style="position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.7); color: white; padding: 3px 8px; border-radius: 8px; font-size: 11px;">
@@ -1326,18 +1214,18 @@
                         `;
                         grid.appendChild(photoDiv);
                     });
-
+                    
                     userDiv.appendChild(grid);
                     categorySection.appendChild(userDiv);
                 });
-
+                
                 galleryContent.appendChild(categorySection);
             });
         }
 
         function filterGallery(categoryId) {
             selectedFilter = categoryId;
-
+            
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
@@ -1359,7 +1247,7 @@
 
         function downloadAllPhotos() {
             const allPhotos = loadPhotosFromLocalStorage();
-
+            
             if (allPhotos.length === 0) {
                 alert('אין תמונות להורדה');
                 return;
@@ -1379,3 +1267,35 @@
 
             alert(`מוריד ${allPhotos.length} תמונות מכל הקטגוריות...`);
         }
+
+        // אתחול האתר
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎉 אתר החתונה של שרה ורוני מוכן!');
+            console.log('💡 גרסה עם דיסקורד - התמונות נשלחות ישירות לערוץ!');
+            console.log('🚀 כולל כפתור בדיקת מצלמה ישיר!');
+            
+            // בדיקת הגדרות דיסקורד
+            if (DISCORD_WEBHOOK_URL === "YOUR_DISCORD_WEBHOOK_URL_HERE") {
+                console.warn('⚠️ צריך להגדיר DISCORD_WEBHOOK_URL');
+            } else {
+                console.log('✅ דיסקורד מוכן!');
+            }
+            
+            // בדיקה אם המשתמש כבר מchובר
+            const savedUser = localStorage.getItem('wedding-user');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                    showMainPage();
+                } catch (error) {
+                    console.error('שגיאה בטעינת נתוני משתמש:', error);
+                    localStorage.removeItem('wedding-user');
+                    showPage('loginPage');
+                }
+            } else {
+                showPage('loginPage');
+            }
+        });
+    </script>
+</body>
+</html>
